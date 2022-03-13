@@ -65,9 +65,8 @@ def can_cheese(small: int, big: int, goal: int) -> bool:
 
     if total >= goal:
         return True
-    return False
-
-
+    else:
+        return False
     """
     >>> can_cheese(3, 1, 8)
     True
