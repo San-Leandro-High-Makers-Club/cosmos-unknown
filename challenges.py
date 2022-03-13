@@ -19,7 +19,9 @@ def is_pal(word):
     >>> is_pal("tacobcat")
     False
     """
-    pass
+    if word == word[::-1]:
+        return True
+    return False
 
 
 def add_evens(nums):
@@ -31,7 +33,11 @@ def add_evens(nums):
     >>> add_evens([-4, 3, 0, 2])
     -4
     """
-    pass
+    tot = 0
+    for i in range(len(nums)):
+        if i % 2 == 0:
+            tot += nums[i]
+    return tot
 
 
 def add_evens_followup(nums):
@@ -43,7 +49,11 @@ def add_evens_followup(nums):
     >>> add_evens(4302])
     5
     """
-    pass
+    nums, tot = str(nums)[::-1], 0
+    for i in range(len(nums)):
+        if i % 2 == 0:
+            tot += int(nums[i])
+    return tot
 
 
 ######################################
