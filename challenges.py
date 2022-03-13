@@ -54,19 +54,6 @@ def add_evens_followup(nums):
 
 
 def can_cheese(small: int, big: int, goal: int) -> bool:
-    #big cheese = 5 kilograms/each
-    #small cheese = 1 kilo each
-    #make a bucket of cheese that is goal kilograms
-    #True if possible to make bucket of cheese from small and big
-    #False if not possible
-
-    big = big*5
-    total = big + small
-
-    if total >= goal:
-        return True
-    else:
-        return False
     """
     >>> can_cheese(3, 1, 8)
     True
@@ -81,8 +68,8 @@ def can_cheese(small: int, big: int, goal: int) -> bool:
     >>> can_cheese(14, 0, 13)
     True
     """
+    pass
 
-can_cheese(3, 1, 8)
 
 def can_cheese_followup(small, small_size, big, big_size, goal) -> bool:
     """
