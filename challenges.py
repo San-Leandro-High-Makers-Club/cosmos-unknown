@@ -5,8 +5,11 @@
 ######################################
 import string
 
-
 def is_pal(word):
+    if word == word[::-1]:
+        return True
+    return False
+
     """
     >>> is_pal("cars")
     False
@@ -23,6 +26,12 @@ def is_pal(word):
 
 
 def add_evens(nums):
+    tot = 0
+    for i in range(len(nums)):
+        if i % 2 == 0:
+            tot += nums[i]
+    return tot
+
     """
     >>> add_evens([5])
     5
@@ -35,6 +44,11 @@ def add_evens(nums):
 
 
 def add_evens_followup(nums):
+    nums, tot = str(nums)[::-1], 0
+    for i in range(len(nums)):
+        if i % 2 == 0:
+            tot += int(nums[i])
+    return tot
     """
     >>> add_evens(5)
     5
