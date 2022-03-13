@@ -68,7 +68,7 @@ def can_cheese(small: int, big: int, goal: int) -> bool:
     >>> can_cheese(14, 0, 13)
     True
     """
-    pass
+    return can_cheese_followup(small, 1, big, 5, goal)
 
 
 def can_cheese_followup(small, small_size, big, big_size, goal) -> bool:
