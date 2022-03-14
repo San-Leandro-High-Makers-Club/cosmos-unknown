@@ -82,6 +82,13 @@ def can_cheese_followup(small, small_size, big, big_size, goal) -> bool:
     >>> can_cheese(3, 3, 5, 5, 32)
     False
     """
+    if small < 0:
+        return False
+    big_needed = cheese_pairing(small, small_size, big_size, goal)
+    if big_needed.denominator == 1:  # quantity of big cheeses is a whole number
+        if big_needed <= big:  # we aren't exceeding our big cheese limit
+            return True
+    return can_cheese_followup(small - 1, small_size, big, big_size, goal)
 
 
 def cheese_pairing(x: int, m_s: int, m_b: int, t: int) -> fractions.Fraction:
