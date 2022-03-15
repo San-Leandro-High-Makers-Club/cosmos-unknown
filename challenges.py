@@ -3,6 +3,7 @@
 # Level 1 (2 pts each)               #
 #                                    #
 ######################################
+import math
 import string
 
 
@@ -132,7 +133,32 @@ def shortest_path(graph: dict, A: int, B: int) -> int:
     >>> shortest_path({1: [2, 3], 2: [1, 3, 8], 3: [1, 2, 4, 8], 5: [3, 6], 6: [5, 7], 7: [6, 8], 8: [2, 7]}, 4, 7)
     3
     """
-    pass
+    if A == B:
+        return 0
+
+    if A not in graph:
+        connections = []
+        for departure_station in list(graph):
+            if A in graph[departure_station]:  # departure_station has a route to A...
+                connections.append(departure_station)  # ...so A has a route to departure_station
+        graph[A] = connections
+    if B not in graph:
+        connections = []
+        for departure_station in list(graph):
+            if B in graph[departure_station]:
+                connections.append(departure_station)
+        graph[B] = connections
+
+    path_options = []
+    for next_station in graph[A]:
+        reduced_graph = graph.copy()
+        del reduced_graph[A]  # rid the graph of the current station, to avoid (infinite) loops back to it
+        if next_station in reduced_graph:
+            path_options.append(shortest_path(reduced_graph, next_station, B))
+        else:
+            path_options.append(math.inf)
+    # return the cost of the best route from this station, plus the cost to get to this station in the first place
+    return 1 + min(path_options)
 
 
 def longest_uppercase(input, k):
