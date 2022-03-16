@@ -101,7 +101,12 @@ def min_of_maxes(nums: int, k: int) -> int:
     >>> min_of_maxes([1,3,-1,-3,5,3,6,7], 1)
     -3
     """
-    pass
+    if k > len(nums):
+        k = len(nums)
+    maxima = []
+    for i in range(len(nums) - k + 1):
+        maxima.append(max(nums[i: i + k]))
+    return min(maxima)
 
 
 ######################################
