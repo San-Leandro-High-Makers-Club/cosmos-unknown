@@ -6,6 +6,7 @@
 import fractions
 import math
 import string
+from typing import List
 
 
 def is_pal(word):
@@ -44,11 +45,11 @@ def add_evens(nums):
 
 def add_evens_followup(nums):
     """
-    >>> add_evens(5)
+    >>> add_evens_followup(5)
     5
-    >>> add_evens(12345)
+    >>> add_evens_followup(12345)
     9
-    >>> add_evens(4302])
+    >>> add_evens_followup(4302)
     5
     """
     nums, tot = str(nums)[::-1], 0
@@ -85,12 +86,11 @@ def can_cheese(small: int, big: int, goal: int) -> bool:
 
 def can_cheese_followup(small, small_size, big, big_size, goal) -> bool:
     """
-    More test cases to come...
-    >>> can_cheese(3, 3, 5, 5, 27)
+    >>> can_cheese_followup(4, 3, 5, 5, 27)
     True
-    >>> can_cheese(3, 3, 5, 5, 28)
+    >>> can_cheese_followup(3, 3, 5, 5, 28)
     True
-    >>> can_cheese(3, 3, 5, 5, 32)
+    >>> can_cheese_followup(3, 3, 5, 5, 32)
     False
     """
     if small < 0:
@@ -115,7 +115,7 @@ def cheese_pairing(x: int, m_s: int, m_b: int, t: int) -> fractions.Fraction:
     return fractions.Fraction(t - m_s * x, m_b)
 
 
-def min_of_maxes(nums: int, k: int) -> int:
+def min_of_maxes(nums: List[int], k: int) -> int:
     """
     >>> min_of_maxes([1,3,-1,-3,5,3,6,7], 3)
     3
@@ -186,21 +186,21 @@ def shortest_path(graph: dict, A: int, B: int) -> int:
     return 1 + min(path_options)
 
 
-def longest_uppercase(input, k):
+def longest_uppercase(input_string, k):
     """
     >>> longest_uppercase("aaabbcajnnaddgfjn", 2)
     5
     >>> longest_uppercase("aaabbbcajnnnnaddgfjn", 1)
     4
     >>> longest_uppercase("aaabbbcajnnnnadddgfjn", 4)
-    9
+    10
     """
-    input = input.lower()
+    input_string = input_string.lower()
     max_length = 0
-    for i in range(len(input)):
+    for i in range(len(input_string)):
         uppercase_letters = []
         substring = ""
-        for l in input[i:]:
+        for l in input_string[i:]:
             if l not in string.ascii_lowercase or (len(uppercase_letters) >= k and l not in uppercase_letters):
                 break
             substring += l
