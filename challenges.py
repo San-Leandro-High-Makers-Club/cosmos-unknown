@@ -180,8 +180,8 @@ def shortest_path(graph: dict, A: int, B: int) -> int:
         del reduced_graph[A]  # rid the graph of the current station, to avoid (infinite) loops back to it
         if next_station in reduced_graph:
             path_options.append(shortest_path(reduced_graph, next_station, B))
-        else:
-            path_options.append(math.inf)
+    if len(path_options) == 0:
+        path_options.append(math.inf)  # destination unreachable
     # return the cost of the best route from this station, plus the cost to get to this station in the first place
     return 1 + min(path_options)
 
