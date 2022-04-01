@@ -97,7 +97,7 @@ def can_cheese_followup(small, small_size, big, big_size, goal) -> bool:
         return False
     big_needed = cheese_pairing(small, small_size, big_size, goal)
     if big_needed.denominator == 1:  # quantity of big cheeses is a whole number
-        if big_needed <= big:  # we aren't exceeding our big cheese limit
+        if big >= big_needed >= 0:  # we aren't exceeding our big cheese limit
             return True
     return can_cheese_followup(small - 1, small_size, big, big_size, goal)
 
