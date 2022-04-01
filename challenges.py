@@ -8,8 +8,6 @@ import math
 import string
 from typing import List
 
-from typing import List
-
 
 def is_pal(word):
     """
