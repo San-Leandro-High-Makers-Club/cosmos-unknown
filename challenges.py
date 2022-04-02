@@ -200,12 +200,13 @@ def longest_uppercase(input_string, k):
     for i in range(len(input_string)):
         uppercase_letters = []
         substring = ""
-        for l in input_string[i:]:
-            if l not in string.ascii_lowercase or (len(uppercase_letters) >= k and l not in uppercase_letters):
+        for letter in input_string[i:]:
+            if letter not in string.ascii_lowercase or (
+                    len(uppercase_letters) >= k and letter not in uppercase_letters):
                 break
-            substring += l
-            if l not in uppercase_letters:
-                uppercase_letters.append(l)
+            substring += letter
+            if letter not in uppercase_letters:
+                uppercase_letters.append(letter)
         max_length = max(max_length, len(substring))
     return max_length
 
