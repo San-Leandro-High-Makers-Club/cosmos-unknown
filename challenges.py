@@ -97,7 +97,7 @@ def can_cheese_followup(small, small_size, big, big_size, goal) -> bool:
         return False
     big_needed = cheese_pairing(small, small_size, big_size, goal)
     if big_needed.denominator == 1:  # quantity of big cheeses is a whole number
-        if big_needed <= big:  # we aren't exceeding our big cheese limit
+        if big >= big_needed >= 0:  # we aren't exceeding our big cheese limit
             return True
     return can_cheese_followup(small - 1, small_size, big, big_size, goal)
 
@@ -180,8 +180,8 @@ def shortest_path(graph: dict, A: int, B: int) -> int:
         del reduced_graph[A]  # rid the graph of the current station, to avoid (infinite) loops back to it
         if next_station in reduced_graph:
             path_options.append(shortest_path(reduced_graph, next_station, B))
-        else:
-            path_options.append(math.inf)
+    if len(path_options) == 0:
+        path_options.append(math.inf)  # destination unreachable
     # return the cost of the best route from this station, plus the cost to get to this station in the first place
     return 1 + min(path_options)
 
@@ -200,12 +200,13 @@ def longest_uppercase(input_string, k):
     for i in range(len(input_string)):
         uppercase_letters = []
         substring = ""
-        for l in input_string[i:]:
-            if l not in string.ascii_lowercase or (len(uppercase_letters) >= k and l not in uppercase_letters):
+        for letter in input_string[i:]:
+            if letter not in string.ascii_lowercase or (
+                    len(uppercase_letters) >= k and letter not in uppercase_letters):
                 break
-            substring += l
-            if l not in uppercase_letters:
-                uppercase_letters.append(l)
+            substring += letter
+            if letter not in uppercase_letters:
+                uppercase_letters.append(letter)
         max_length = max(max_length, len(substring))
     return max_length
 
