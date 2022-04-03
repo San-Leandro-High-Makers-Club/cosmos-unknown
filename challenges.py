@@ -265,7 +265,7 @@ def largest_valid_tree(edge_string):
             for tree in valid_trees:
                 if maintains_valid_tree(tree, edge_string[i], edge_string[i + 1]):
                     # make a note if we're changing the root node, that is, we're turning the former root into a child
-                    changing_root = tree.get(edge_string[i + 1]) == ""
+                    changing_root = tree[edge_string[i + 1]] == ""
                     tree[edge_string[i + 1]] = edge_string[i]  # map the child to the parent
                     if changing_root:
                         # the parent becomes the new root (map it to an empty string)
