@@ -6,7 +6,7 @@
 import fractions
 import math
 import string
-from typing import List
+from typing import List, Dict
 
 
 def is_pal(word):
@@ -144,7 +144,61 @@ def space_acquaintance(space_from: list, space_to: list) -> int:
     >>> space_acquaintance([1, 4, 4, 2, 5, 6, 7, 2], [3, 1, 3, 5, 6, 7, 5, 6])
     0
     """
-    pass
+    if len(space_from) != len(space_to):
+        return -1  # this behaviour is not defined
+
+    acquaintance_index: Dict[int, List[int]] = {}  # maps each astronaut to a list of other astronauts whom they know
+    for i in range(len(space_from)):
+        if space_from[i] == space_to[i]:
+            continue
+        if space_from[i] not in acquaintance_index:  # if we haven't yet started building an index for this astronaut...
+            acquaintance_index[space_from[i]] = []  # ...start building an index
+        if space_to[i] not in acquaintance_index:
+            acquaintance_index[space_to[i]] = []
+        # add each astronaut to the other's index, if they're not already there
+        if space_to[i] not in acquaintance_index[space_from[i]]:
+            acquaintance_index[space_from[i]].append(space_to[i])
+        if space_from[i] not in acquaintance_index[space_to[i]]:
+            acquaintance_index[space_to[i]].append(space_from[i])
+    # sort acquaintance indices
+    for astronaut in list(acquaintance_index):
+        acquaintance_index[astronaut].sort()
+
+    astronauts = list(acquaintance_index)
+    astronauts.sort()
+    trios: List[tuple] = []
+    for astronaut in astronauts:
+        # find all trios containing this astronaut
+        # for a trio, this first astronaut must know a second astronaut, who knows a third astronaut, who in turn knows
+        # this first astronaut
+        for second_astronaut in acquaintance_index[astronaut]:
+            for third_astronaut in acquaintance_index[second_astronaut]:
+                if astronaut in acquaintance_index[third_astronaut]:  # this is a trio
+                    # we list trios as 3-tuples, with the astronauts in ascending order
+                    # if these astronauts are not in ascending order, we need not record this trio, as it will duplicate
+                    # the previous record of this same trio
+                    if astronaut < second_astronaut < third_astronaut:
+                        trios.append((astronaut, second_astronaut, third_astronaut))
+
+    if len(trios) == 0:
+        return -1
+
+    acquaintance_sums: List[int] = []
+    for trio in trios:
+        # list the astronauts known by this trio
+        acquaintances: List[int] = []
+        for astronaut in acquaintance_index[trio[0]]:
+            if astronaut not in acquaintances and astronaut not in trio:
+                acquaintances.append(astronaut)
+        for astronaut in acquaintance_index[trio[1]]:
+            if astronaut not in acquaintances and astronaut not in trio:
+                acquaintances.append(astronaut)
+        for astronaut in acquaintance_index[trio[2]]:
+            if astronaut not in acquaintances and astronaut not in trio:
+                acquaintances.append(astronaut)
+        acquaintance_sums.append(len(acquaintances))
+
+    return min(acquaintance_sums)
 
 
 def shortest_path(graph: dict, A: int, B: int) -> int:
