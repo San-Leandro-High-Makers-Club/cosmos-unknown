@@ -254,71 +254,7 @@ def largest_valid_tree(edge_string):
     >>> largest_valid_tree("AB BC CA")
     2
     """
-    edge_string = edge_string.lower()
-    # Each dictionary represents a tree, where the key is a child node and the value is the parent.
-    # Notice each key should map to exactly one parent (unless the key is the root node).
-    # The root node should map to an empty string.
-    valid_trees: List[dict] = []
-    for i in range(len(edge_string) - 1):
-        if edge_string[i] in string.ascii_lowercase and edge_string[i + 1] in string.ascii_lowercase:
-            # this is a pair of letters, representing a directed edge
-            # add it to as many trees as possible
-            for tree in valid_trees:
-                if maintains_valid_tree(tree, edge_string[i], edge_string[i + 1]):
-                    # make a note if we're changing the root node, that is, we're turning the former root into a child
-                    changing_root = tree[edge_string[i + 1]] == ""
-                    tree[edge_string[i + 1]] = edge_string[i]  # map the child to the parent
-                    if changing_root:
-                        # the parent becomes the new root (map it to an empty string)
-                        tree[edge_string[i]] = ""
-            # always start another tree in case it becomes the largest
-            valid_trees.append({edge_string[i + 1]: edge_string[i]})
-            # the parent forms the root of this new tree (map it to an empty string)
-            valid_trees[-1][edge_string[i]] = ""
-    # find the largest tree and return its size
-    max_edges = 0
-    for tree in valid_trees:
-        edges = len(list(tree)) - 1  # the root node doesn't count as an edge
-        if edges > max_edges:
-            max_edges = edges
-    return max_edges
-
-
-def maintains_valid_tree(original_tree: dict, parent: str, child: str) -> bool:
-    """Determine whether adding a node to a tree would result in a valid tree
-
-    :param original_tree: The base tree, which should itself be a valid tree
-    :param parent: The parent node to be added to the base tree
-    :param child: The child node to be added to the base tree
-    :return: True if adding the node would result in a valid tree, False if adding the node would result in an invalid
-        tree
-    """
-    # sanity check
-    if parent == child:
-        return False
-
-    # sanity check for one root
-    roots: List[str] = []  # in a valid tree, this should contain one string representing the root node
-    for key in list(original_tree):
-        if original_tree[key] == "":
-            roots.append(key)
-    if len(roots) != 1:
-        return False
-
-    # Check if child already exists in the tree.
-    # If so, the modification can only be valid if child was the root of original_tree (otherwise, we're mapping the
-    # child to multiple parents), and parent will be the new root (otherwise, we're making a cycle).
-    if child in original_tree:
-        if child == roots[0] and parent not in original_tree:
-            return True
-    else:
-        # The child doesn't already exist in the tree.
-        # The only valid modification is to map it to an existing node.
-        # Otherwise, we're creating multiple roots.
-        if parent in original_tree:
-            return True
-
-    return False
+    pass
 
 
 if __name__ == "__main__":
