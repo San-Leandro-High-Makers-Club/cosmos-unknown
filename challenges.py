@@ -6,7 +6,7 @@
 import fractions
 import math
 import string
-from typing import List
+from typing import List, Dict
 
 
 def is_pal(word):
@@ -247,14 +247,41 @@ def lifeguard_budget(intervals):
     pass
 
 
-def largest_valid_tree(edge_string):
+def largest_valid_tree(edge_string: str) -> int:
     """
     >>> largest_valid_tree("AB AC BD")
     3
     >>> largest_valid_tree("AB BC CA")
     2
     """
-    pass
+    edge_string = edge_string.lower()
+    edges: Dict[str, List[str]] = parse_edges(edge_string)[0]
+
+    if len(list(edges)) == 0:
+        return 0
+
+    subtree_sizes: List[int] = []
+    for parent in list(edges):
+        subtree_sizes.append(largest_valid_subtree(edge_string, parent))
+    return max(subtree_sizes)
+
+
+def parse_edges(edge_string: str) -> (Dict[str, List[str]], Dict[str, List[str]]):
+    edges: Dict[str, List[str]] = {}  # maps parent nodes to a list of child nodes
+    for i in range(len(edge_string) - 1):
+        if edge_string[i] in string.ascii_lowercase and edge_string[i + 1] in string.ascii_lowercase:
+            if edge_string[i] not in edges:
+                edges[edge_string[i]] = []
+            edges[edge_string[i]].append(edge_string[i + 1])
+
+    reverse_edges: Dict[str, List[str]] = {}  # maps child nodes to a list of its parents (hopefully only one parent)
+    for i in range(len(edge_string) - 1):
+        if edge_string[i] in string.ascii_lowercase and edge_string[i + 1] in string.ascii_lowercase:
+            if edge_string[i + 1] not in reverse_edges:
+                reverse_edges[edge_string[i + 1]] = []
+            reverse_edges[edge_string[i + 1]].append(edge_string[i])
+
+    return edges, reverse_edges
 
 
 if __name__ == "__main__":
