@@ -266,6 +266,70 @@ def largest_valid_tree(edge_string: str) -> int:
     return max(subtree_sizes)
 
 
+def largest_valid_subtree(edge_string: str, root: str) -> int:
+    edges: Dict[str, List[str]] = parse_edges(edge_string)[0]
+
+    if root not in edges:
+        return 0
+
+    # stores the nodes at each level of the tree, where levels[0] is a list of nodes at the root level (i.e. just the
+    # root node), levels[1] is a list of nodes at the level below that, and so forth.
+    levels: List[List[str]] = [[root]]
+    next_level = get_level_below(edge_string, [root])
+    while len(next_level) != 0:
+        levels.append(next_level)
+        next_level = get_level_below(edge_string, levels[-1])
+        for node in next_level:
+            if node in edges:  # node has children
+                for child in edges[node]:
+                    if exists_in_higher_level(levels, child):  # node links to another node which already exists
+                        # remove this illegal link
+                        if edge_string.count(node + child) > 0:
+                            i = edge_string.index(node + child)
+                            edge_string = edge_string[:i] + edge_string[i + 3:]
+
+    edge_count = 0
+    for level in levels:
+        edge_count += len(level)
+    edge_count -= 1  # discount the root node
+    edge_count -= duplicate_node_count(levels)  # discount extraneous links
+    return edge_count
+
+
+def duplicate_node_count(levels: List[List[str]]) -> int:
+    unique_node_names: List[str] = []
+    for level in levels:
+        for node in level:
+            if node not in unique_node_names:
+                unique_node_names.append(node)
+    count = 0
+    for name in unique_node_names:
+        num_instances_of_name = 0
+        for level in levels:
+            for node in level:
+                if name == node:
+                    num_instances_of_name += 1
+        count += num_instances_of_name - 1  # ignore the unique instance
+    return count
+
+
+def exists_in_higher_level(levels: List[List[str]], node: str) -> bool:
+    for level in levels:
+        if node in level:
+            return True
+    return False
+
+
+def get_level_below(edge_string: str, current_level: List[str]) -> List[str]:
+    edges = parse_edges(edge_string)[0]
+    level: List[str] = []
+    for potential_parent in current_level:
+        if potential_parent in edges:
+            for child in edges[potential_parent]:
+                level.append(child)
+    return level
+
+
 def parse_edges(edge_string: str) -> (Dict[str, List[str]], Dict[str, List[str]]):
     edges: Dict[str, List[str]] = {}  # maps parent nodes to a list of child nodes
     for i in range(len(edge_string) - 1):
