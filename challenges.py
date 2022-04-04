@@ -95,24 +95,11 @@ def can_cheese_followup(small, small_size, big, big_size, goal) -> bool:
     """
     if small < 0:
         return False
-    big_needed = cheese_pairing(small, small_size, big_size, goal)
+    big_needed = fractions.Fraction(goal - small_size * small, big_size)
     if big_needed.denominator == 1:  # quantity of big cheeses is a whole number
         if big >= big_needed >= 0:  # we aren't exceeding our big cheese limit
             return True
     return can_cheese_followup(small - 1, small_size, big, big_size, goal)
-
-
-def cheese_pairing(x: int, m_s: int, m_b: int, t: int) -> fractions.Fraction:
-    """Find the quantity of big cheeses needed to precisely reach the target mass
-
-    :param x: The number of small cheeses
-    :param m_s: The mass of one small cheese
-    :param m_b: The mass of one big cheese
-    :param t: The target mass
-    :return: The quantity of big cheeses (as a rational number) required such that the sum of the masses of the small
-        and big cheeses equals the target mass exactly
-    """
-    return fractions.Fraction(t - m_s * x, m_b)
 
 
 def min_of_maxes(nums: List[int], k: int) -> int:
