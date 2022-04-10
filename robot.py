@@ -31,13 +31,19 @@ ARM_INVERT_L = False
 ARM_INVERT_R = False
 
 def autonomous_setup():
-    pass
+    Robot.set_value(DRIVE_CONTROLL_ID, "invert"+TREAD_L, TREAD_INVERT_L)
+    Robot.set_value(DRIVE_CONTROLL_ID, "invert"+TREAD_R, TREAD_INVERT_R)
+    Robot.set_value(ARM_CONTROLLER_ID, "invert"+ARM_ID_L, ARM_INVERT_L)
+    Robot.set_value(ARM_CONTROLLER_ID, "invert"+ARM_ID_R, ARM_INVERT_R)
 
 def autonomous_main():
     pass
 
 def teleop_setup():
-    pass
+    Robot.set_value(DRIVE_CONTROLL_ID, "invert"+TREAD_L, TREAD_INVERT_L)
+    Robot.set_value(DRIVE_CONTROLL_ID, "invert"+TREAD_R, TREAD_INVERT_R)
+    Robot.set_value(ARM_CONTROLLER_ID, "invert"+ARM_ID_L, ARM_INVERT_L)
+    Robot.set_value(ARM_CONTROLLER_ID, "invert"+ARM_ID_R, ARM_INVERT_R)
 
 def teleop_main():
     if JOYSTICK_LY() != 0:
