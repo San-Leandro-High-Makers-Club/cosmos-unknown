@@ -6,7 +6,7 @@
 import fractions
 import math
 import string
-from typing import List
+from typing import List, Dict
 
 
 def is_pal(word):
@@ -95,24 +95,11 @@ def can_cheese_followup(small, small_size, big, big_size, goal) -> bool:
     """
     if small < 0:
         return False
-    big_needed = cheese_pairing(small, small_size, big_size, goal)
+    big_needed = fractions.Fraction(goal - small_size * small, big_size)
     if big_needed.denominator == 1:  # quantity of big cheeses is a whole number
         if big >= big_needed >= 0:  # we aren't exceeding our big cheese limit
             return True
     return can_cheese_followup(small - 1, small_size, big, big_size, goal)
-
-
-def cheese_pairing(x: int, m_s: int, m_b: int, t: int) -> fractions.Fraction:
-    """Find the quantity of big cheeses needed to precisely reach the target mass
-
-    :param x: The number of small cheeses
-    :param m_s: The mass of one small cheese
-    :param m_b: The mass of one big cheese
-    :param t: The target mass
-    :return: The quantity of big cheeses (as a rational number) required such that the sum of the masses of the small
-        and big cheeses equals the target mass exactly
-    """
-    return fractions.Fraction(t - m_s * x, m_b)
 
 
 def min_of_maxes(nums: List[int], k: int) -> int:
@@ -144,7 +131,61 @@ def space_acquaintance(space_from: list, space_to: list) -> int:
     >>> space_acquaintance([1, 4, 4, 2, 5, 6, 7, 2], [3, 1, 3, 5, 6, 7, 5, 6])
     0
     """
-    pass
+    if len(space_from) != len(space_to):
+        return -1  # this behaviour is not defined
+
+    acquaintance_index: Dict[int, List[int]] = {}  # maps each astronaut to a list of other astronauts whom they know
+    for i in range(len(space_from)):
+        if space_from[i] == space_to[i]:
+            continue
+        if space_from[i] not in acquaintance_index:  # if we haven't yet started building an index for this astronaut...
+            acquaintance_index[space_from[i]] = []  # ...start building an index
+        if space_to[i] not in acquaintance_index:
+            acquaintance_index[space_to[i]] = []
+        # add each astronaut to the other's index, if they're not already there
+        if space_to[i] not in acquaintance_index[space_from[i]]:
+            acquaintance_index[space_from[i]].append(space_to[i])
+        if space_from[i] not in acquaintance_index[space_to[i]]:
+            acquaintance_index[space_to[i]].append(space_from[i])
+    # sort acquaintance indices
+    for astronaut in list(acquaintance_index):
+        acquaintance_index[astronaut].sort()
+
+    astronauts = list(acquaintance_index)
+    astronauts.sort()
+    trios: List[tuple] = []
+    for astronaut in astronauts:
+        # find all trios containing this astronaut
+        # for a trio, this first astronaut must know a second astronaut, who knows a third astronaut, who in turn knows
+        # this first astronaut
+        for second_astronaut in acquaintance_index[astronaut]:
+            for third_astronaut in acquaintance_index[second_astronaut]:
+                if astronaut in acquaintance_index[third_astronaut]:  # this is a trio
+                    # we list trios as 3-tuples, with the astronauts in ascending order
+                    # if these astronauts are not in ascending order, we need not record this trio, as it will duplicate
+                    # the previous record of this same trio
+                    if astronaut < second_astronaut < third_astronaut:
+                        trios.append((astronaut, second_astronaut, third_astronaut))
+
+    if len(trios) == 0:
+        return -1
+
+    acquaintance_sums: List[int] = []
+    for trio in trios:
+        # list the astronauts known by this trio
+        acquaintances: List[int] = []
+        for astronaut in acquaintance_index[trio[0]]:
+            if astronaut not in acquaintances and astronaut not in trio:
+                acquaintances.append(astronaut)
+        for astronaut in acquaintance_index[trio[1]]:
+            if astronaut not in acquaintances and astronaut not in trio:
+                acquaintances.append(astronaut)
+        for astronaut in acquaintance_index[trio[2]]:
+            if astronaut not in acquaintances and astronaut not in trio:
+                acquaintances.append(astronaut)
+        acquaintance_sums.append(len(acquaintances))
+
+    return min(acquaintance_sums)
 
 
 def shortest_path(graph: dict, A: int, B: int) -> int:
@@ -200,12 +241,13 @@ def longest_uppercase(input_string, k):
     for i in range(len(input_string)):
         uppercase_letters = []
         substring = ""
-        for l in input_string[i:]:
-            if l not in string.ascii_lowercase or (len(uppercase_letters) >= k and l not in uppercase_letters):
+        for letter in input_string[i:]:
+            if letter not in string.ascii_lowercase or (
+                    len(uppercase_letters) >= k and letter not in uppercase_letters):
                 break
-            substring += l
-            if l not in uppercase_letters:
-                uppercase_letters.append(l)
+            substring += letter
+            if letter not in uppercase_letters:
+                uppercase_letters.append(letter)
         max_length = max(max_length, len(substring))
     return max_length
 
@@ -246,14 +288,105 @@ def lifeguard_budget(intervals):
     pass
 
 
-def largest_valid_tree(edge_string):
+def largest_valid_tree(edge_string: str) -> int:
     """
     >>> largest_valid_tree("AB AC BD")
     3
     >>> largest_valid_tree("AB BC CA")
     2
     """
-    pass
+    edge_string = edge_string.lower()
+    edges: Dict[str, List[str]] = parse_edges(edge_string)[0]
+
+    if len(list(edges)) == 0:
+        return 0
+
+    subtree_sizes: List[int] = []
+    for parent in list(edges):
+        subtree_sizes.append(largest_valid_subtree(edge_string, parent))
+    return max(subtree_sizes)
+
+
+def largest_valid_subtree(edge_string: str, root: str) -> int:
+    edges: Dict[str, List[str]] = parse_edges(edge_string)[0]
+
+    if root not in edges:
+        return 0
+
+    # stores the nodes at each level of the tree, where levels[0] is a list of nodes at the root level (i.e. just the
+    # root node), levels[1] is a list of nodes at the level below that, and so forth.
+    levels: List[List[str]] = [[root]]
+    next_level = get_level_below(edge_string, [root])
+    while len(next_level) != 0:
+        levels.append(next_level)
+        next_level = get_level_below(edge_string, levels[-1])
+        for node in next_level:
+            if node in edges:  # node has children
+                for child in edges[node]:
+                    if exists_in_higher_level(levels, child):  # node links to another node which already exists
+                        # remove this illegal link
+                        if edge_string.count(node + child) > 0:
+                            i = edge_string.index(node + child)
+                            edge_string = edge_string[:i] + edge_string[i + 3:]
+
+    edge_count = 0
+    for level in levels:
+        edge_count += len(level)
+    edge_count -= 1  # discount the root node
+    edge_count -= duplicate_node_count(levels)  # discount extraneous links
+    return edge_count
+
+
+def duplicate_node_count(levels: List[List[str]]) -> int:
+    unique_node_names: List[str] = []
+    for level in levels:
+        for node in level:
+            if node not in unique_node_names:
+                unique_node_names.append(node)
+    count = 0
+    for name in unique_node_names:
+        num_instances_of_name = 0
+        for level in levels:
+            for node in level:
+                if name == node:
+                    num_instances_of_name += 1
+        count += num_instances_of_name - 1  # ignore the unique instance
+    return count
+
+
+def exists_in_higher_level(levels: List[List[str]], node: str) -> bool:
+    for level in levels:
+        if node in level:
+            return True
+    return False
+
+
+def get_level_below(edge_string: str, current_level: List[str]) -> List[str]:
+    edges = parse_edges(edge_string)[0]
+    level: List[str] = []
+    for potential_parent in current_level:
+        if potential_parent in edges:
+            for child in edges[potential_parent]:
+                level.append(child)
+    return level
+
+
+def parse_edges(edge_string: str) -> (Dict[str, List[str]], Dict[str, List[str]]):
+    edges: Dict[str, List[str]] = {}  # maps parent nodes to a list of child nodes
+    for i in range(len(edge_string) - 1):
+        if edge_string[i] in string.ascii_lowercase and edge_string[i + 1] in string.ascii_lowercase:
+            if edge_string[i] not in edges:
+                edges[edge_string[i]] = []
+            edges[edge_string[i]].append(edge_string[i + 1])
+
+    reverse_edges: Dict[str, List[str]] = {}  # maps child nodes to a list of its parents (hopefully only one parent)
+    for i in range(len(edge_string) - 1):
+        if edge_string[i] in string.ascii_lowercase and edge_string[i + 1] in string.ascii_lowercase:
+            if edge_string[i + 1] not in reverse_edges:
+                reverse_edges[edge_string[i + 1]] = []
+            reverse_edges[edge_string[i + 1]].append(edge_string[i])
+
+    return edges, reverse_edges
 
 
 if __name__ == "__main__":
