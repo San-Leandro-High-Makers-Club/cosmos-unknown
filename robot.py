@@ -41,7 +41,7 @@ def teleop_setup():
 
 def teleop_main():
     resetMotors()
-    if JOYSTICK_RY() != && JOYSTICK_LY() != 0:
+    if JOYSTICK_RY() != 0 && JOYSTICK_LY() != 0:
         Robot.set_value(DRIVE_CONTROLL_ID, "velocity"+TREAD_L, JOYSTICK_LY())
         Robot.set_value(DRIVE_CONTROLL_ID, "velocity"+TREAD_R, JOYSTICK_RY())
     elif JOYSTICK_RY() != 0 || JOYSTICK_LY() != 0:
