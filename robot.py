@@ -58,7 +58,7 @@ def resetMotors(device: str = None, id: str = None):
     if not device:
         Robot.set_value(DRIVE_CONTROLL_ID, "velocity"+TREAD_L, 0)
         Robot.set_value(DRIVE_CONTROLL_ID, "velocity"+TREAD_R, 0)
-        Robot.set_value(ARM_CONTROLLER_ID, "velocity"+ARM_ID_R, 0)
+        Robot.set_value(ARM_CONTROLLER_ID, "velocity"+ARM_ID_L, 0)
         Robot.set_value(ARM_CONTROLLER_ID, "velocity"+ARM_ID_R, 0)
     else:
         Robot.set_value(device, "velocity"+id, 0)
