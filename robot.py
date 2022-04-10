@@ -22,13 +22,13 @@ TREAD_L = '_b'
 ARM_ID_R = '_a'
 ARM_ID_L = '_b'
 
-#TREAD INVERSIONS
+#TREAD MOTOR INVERSIONS
 TREAD_INVERT_L = False
-TREAD_INVERT_R = True
+TREAD_INVERT_R = False
 
-#ARM INVERSIONS
+#ARM MOTOR INVERSIONS
 ARM_INVERT_L = False
-ARM_INVERT_R = True
+ARM_INVERT_R = False
 
 def autonomous_setup():
     pass
@@ -40,25 +40,11 @@ def teleop_setup():
     pass
 
 def teleop_main():
-    resetMotors()
-    if JOYSTICK_RY() != 0 && JOYSTICK_LY() != 0:
+    if JOYSTICK_LY() != 0:
         Robot.set_value(DRIVE_CONTROLL_ID, "velocity"+TREAD_L, JOYSTICK_LY())
+    if JOYSTICK_RY() != 0:
         Robot.set_value(DRIVE_CONTROLL_ID, "velocity"+TREAD_R, JOYSTICK_RY())
-    elif JOYSTICK_RY() != 0 || JOYSTICK_LY() != 0:
-        device = DRIVE_CONTROLL_ID
-        if JOYSTICK_RY() != 0:
-            motor = "velocity"+TREAD_R
-            velocity = None
-        else:
-            motor = "velocity"+TREAD_L
-            velocity = None
-        Robot.set_value(device, motor, velocity)
-
-def resetMotors(device: str = None, id: str = None):
-    if not device:
-        Robot.set_value(DRIVE_CONTROLL_ID, "velocity"+TREAD_L, 0)
-        Robot.set_value(DRIVE_CONTROLL_ID, "velocity"+TREAD_R, 0)
-        Robot.set_value(ARM_CONTROLLER_ID, "velocity"+ARM_ID_L, 0)
-        Robot.set_value(ARM_CONTROLLER_ID, "velocity"+ARM_ID_R, 0)
-    else:
-        Robot.set_value(device, "velocity"+id, 0)
+    if ARM_L() != 0:
+        Robot.set_value(ARM_CONTROLLER_ID, "velocity"+ARM_ID_L, JOYSTICK_LY())
+    if ARM_R() != 0:
+        Robot.set_value(ARM_CONTROLLER_ID, "velocity"+ARM_ID_R, JOYSTICK_RY())
