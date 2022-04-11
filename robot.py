@@ -46,6 +46,12 @@ def autonomous_setup():
     Robot.set_value(DRIVE_CONTROLLER_ID, "invert" + TREAD_ID_R, TREAD_INVERT_R)
     Robot.set_value(ARM_CONTROLLER_ID, "invert" + ARM_ID_L, ARM_INVERT)
     Robot.set_value(ARM_CONTROLLER_ID, "invert" + ARM_ID_R, ARM_INVERT)
+    
+    Robot.set_value(DRIVE_CONTROLLER_ID, "pid_enabled"+TREAD_ID_L, False)
+    Robot.set_value(DRIVE_CONTROLLER_ID, "pid_enabled"+TREAD_ID_R, False)
+    Robot.set_value(ARM_CONTROLLER_ID, "pid_enabled"+ARM_ID_L, False)
+    Robot.set_value(ARM_CONTROLLER_ID, "pid_enabled"+ARM_ID_R, False)
+
 
 
 def autonomous_main():
