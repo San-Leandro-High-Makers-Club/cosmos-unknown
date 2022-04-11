@@ -1,4 +1,4 @@
-#MOTOR CONTROllers
+# MOTOR CONTROllers
 DRIVE_CONTROLLER_ID = "6_1491370133845894324"
 ARM_CONTROLLER_ID = "6_12577161366600381129"
 
@@ -22,35 +22,39 @@ TREAD_L = '_b'
 ARM_ID_R = '_a'
 ARM_ID_L = '_b'
 
-#TREAD MOTOR INVERSIONS
+# TREAD MOTOR INVERSIONS
 TREAD_INVERT_L = False
 TREAD_INVERT_R = False
 
-#ARM MOTOR INVERSIONS
+# ARM MOTOR INVERSIONS
 ARM_INVERT_L = False
 ARM_INVERT_R = False
 
+
 def autonomous_setup():
-    Robot.set_value(DRIVE_CONTROLLER_ID, "invert"+TREAD_L, TREAD_INVERT_L)
-    Robot.set_value(DRIVE_CONTROLLER_ID, "invert"+TREAD_R, TREAD_INVERT_R)
-    Robot.set_value(ARM_CONTROLLER_ID, "invert"+ARM_ID_L, ARM_INVERT_L)
-    Robot.set_value(ARM_CONTROLLER_ID, "invert"+ARM_ID_R, ARM_INVERT_R)
+    Robot.set_value(DRIVE_CONTROLLER_ID, "invert" + TREAD_L, TREAD_INVERT_L)
+    Robot.set_value(DRIVE_CONTROLLER_ID, "invert" + TREAD_R, TREAD_INVERT_R)
+    Robot.set_value(ARM_CONTROLLER_ID, "invert" + ARM_ID_L, ARM_INVERT_L)
+    Robot.set_value(ARM_CONTROLLER_ID, "invert" + ARM_ID_R, ARM_INVERT_R)
+
 
 def autonomous_main():
     pass
 
+
 def teleop_setup():
-    Robot.set_value(DRIVE_CONTROLLER_ID, "invert"+TREAD_L, TREAD_INVERT_L)
-    Robot.set_value(DRIVE_CONTROLLER_ID, "invert"+TREAD_R, TREAD_INVERT_R)
-    Robot.set_value(ARM_CONTROLLER_ID, "invert"+ARM_ID_L, ARM_INVERT_L)
-    Robot.set_value(ARM_CONTROLLER_ID, "invert"+ARM_ID_R, ARM_INVERT_R)
+    Robot.set_value(DRIVE_CONTROLLER_ID, "invert" + TREAD_L, TREAD_INVERT_L)
+    Robot.set_value(DRIVE_CONTROLLER_ID, "invert" + TREAD_R, TREAD_INVERT_R)
+    Robot.set_value(ARM_CONTROLLER_ID, "invert" + ARM_ID_L, ARM_INVERT_L)
+    Robot.set_value(ARM_CONTROLLER_ID, "invert" + ARM_ID_R, ARM_INVERT_R)
+
 
 def teleop_main():
     if JOYSTICK_LY() != 0:
-        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity"+TREAD_L, JOYSTICK_LY())
+        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity" + TREAD_L, JOYSTICK_LY())
     if JOYSTICK_RY() != 0:
-        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity"+TREAD_R, JOYSTICK_RY())
+        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity" + TREAD_R, JOYSTICK_RY())
     if ARM_L() != 0:
-        Robot.set_value(ARM_CONTROLLER_ID, "velocity"+ARM_ID_L, JOYSTICK_LY())
+        Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_L, JOYSTICK_LY())
     if ARM_R() != 0:
-        Robot.set_value(ARM_CONTROLLER_ID, "velocity"+ARM_ID_R, JOYSTICK_RY())
+        Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_R, JOYSTICK_RY())
