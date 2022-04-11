@@ -62,11 +62,11 @@ def teleop_setup():
 
 def teleop_main():
     # updates the velocity param value of the motor, on condition TRUE
-    if JOYSTICK_LY() >= abs(DRIVE_DB_RANGE):
+    if abs(JOYSTICK_LY()) >= DRIVE_DB_RANGE:
         Robot.set_value(DRIVE_CONTROLLER_ID, "velocity" + TREAD_ID_L, JOYSTICK_LY())
     else:
         Robot.set_value(DRIVE_CONTROLLER_ID, "velocity" + TREAD_ID_L, 0)
-    if JOYSTICK_RY() >= abs(DRIVE_DB_RANGE):
+    if abs(JOYSTICK_RY()) >= DRIVE_DB_RANGE:
         Robot.set_value(DRIVE_CONTROLLER_ID, "velocity" + TREAD_ID_R, JOYSTICK_RY())
     else:
         Robot.set_value(DRIVE_CONTROLLER_ID, "velocity" + TREAD_ID_R, 0)
