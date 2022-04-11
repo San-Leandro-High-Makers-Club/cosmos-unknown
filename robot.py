@@ -73,5 +73,5 @@ def teleop_main():
         Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_R, ARM_SPEED)
     if ARM_DL() != 0:
         Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_L, ARM_SPEED*-1)
-    if ARM_DL() != 0:
+    if ARM_DR() != 0:
         Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_R, ARM_SPEED*-1)
