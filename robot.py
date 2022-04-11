@@ -32,17 +32,19 @@ ARM_ID_L = '_b'
 TREAD_INVERT_L = False
 TREAD_INVERT_R = False
 
-# ARM MOTOR INVERSIONS
-ARM_INVERT_L = False
-ARM_INVERT_R = False
+# ARM MOTOR INVERSION
+ARM_INVERT = False
+
+# ARM MOTOR SPEED
+ARM_SPEED = None
 
 
 def autonomous_setup():
     # sets the inverts for the individual motors on each controller
     Robot.set_value(DRIVE_CONTROLLER_ID, "invert" + TREAD_ID_L, TREAD_INVERT_L)
     Robot.set_value(DRIVE_CONTROLLER_ID, "invert" + TREAD_ID_R, TREAD_INVERT_R)
-    Robot.set_value(ARM_CONTROLLER_ID, "invert" + ARM_ID_L, ARM_INVERT_L)
-    Robot.set_value(ARM_CONTROLLER_ID, "invert" + ARM_ID_R, ARM_INVERT_R)
+    Robot.set_value(ARM_CONTROLLER_ID, "invert" + ARM_ID_L, ARM_INVERT)
+    Robot.set_value(ARM_CONTROLLER_ID, "invert" + ARM_ID_R, ARM_INVERT)
 
 
 def autonomous_main():
@@ -53,8 +55,8 @@ def teleop_setup():
     # sets the inverts for the individual motors on each controller
     Robot.set_value(DRIVE_CONTROLLER_ID, "invert" + TREAD_ID_L, TREAD_INVERT_L)
     Robot.set_value(DRIVE_CONTROLLER_ID, "invert" + TREAD_ID_R, TREAD_INVERT_R)
-    Robot.set_value(ARM_CONTROLLER_ID, "invert" + ARM_ID_L, ARM_INVERT_L)
-    Robot.set_value(ARM_CONTROLLER_ID, "invert" + ARM_ID_R, ARM_INVERT_R)
+    Robot.set_value(ARM_CONTROLLER_ID, "invert" + ARM_ID_L, ARM_INVERT)
+    Robot.set_value(ARM_CONTROLLER_ID, "invert" + ARM_ID_R, ARM_INVERT)
 
 
 def teleop_main():
@@ -64,6 +66,6 @@ def teleop_main():
     if JOYSTICK_RY() != 0:
         Robot.set_value(DRIVE_CONTROLLER_ID, "velocity" + TREAD_ID_R, JOYSTICK_RY())
     if ARM_L() != 0:
-        Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_L, JOYSTICK_LY())
+        Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_L, ARM_SPEED)
     if ARM_R() != 0:
-        Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_R, JOYSTICK_RY())
+        Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_R, ARM_SPEED)
