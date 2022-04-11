@@ -15,8 +15,12 @@ JOYSTICK_RY: float = lambda: Gamepad.get_value("joystick_right_y")
 JOYSTICK_LY: float = lambda: Gamepad.get_value("joystick_left_y")
 
 # reads TRUE/FALSE value depending on if BTN is Pressed
-ARM_R: bool = lambda: Gamepad.get_value("r_trigger")
-ARM_L: bool = lambda: Gamepad.get_value("l_trigger")
+
+ARM_UR: bool = lambda: Gamepad.get_value("l_bumper")
+ARM_UL: bool = lambda: Gamepad.get_value("r_bumper")
+
+ARM_DR: bool = lambda: Gamepad.get_value("r_trigger")
+ARM_DL: bool = lambda: Gamepad.get_value("l_trigger")
 
 ##### MOTORS SECTION #####
 
@@ -63,7 +67,11 @@ def teleop_main():
         Robot.set_value(DRIVE_CONTROLLER_ID, "velocity" + TREAD_ID_L, JOYSTICK_LY())
     if JOYSTICK_RY() != 0:
         Robot.set_value(DRIVE_CONTROLLER_ID, "velocity" + TREAD_ID_R, JOYSTICK_RY())
-    if ARM_L() != 0:
+    if ARM_UL() != 0:
         Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_L, ARM_SPEED)
-    if ARM_R() != 0:
+    if ARM_UR() != 0:
         Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_R, ARM_SPEED)
+    if ARM_DL() != 0:
+        Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_L, ARM_SPEED*-1)
+    if ARM_DL() != 0:
+        Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_R, ARM_SPEED*-1)
