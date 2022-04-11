@@ -24,8 +24,8 @@ ARM_DL: bool = lambda: Gamepad.get_value("l_trigger")
 ##### MOTORS SECTION #####
 
 # TREAD MOTOR ID's
-TREAD_ID_R = '_a'
-TREAD_ID_L = '_b'
+TREAD_ID_R = '_b'
+TREAD_ID_L = '_a'
 
 # ARM MOTOR ID's
 ARM_ID_R = '_a'
