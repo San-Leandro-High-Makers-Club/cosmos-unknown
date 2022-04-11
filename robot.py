@@ -5,8 +5,7 @@ DRIVE_CONTROLLER_ID = "6_1491370133845894324"
 ARM_CONTROLLER_ID = "6_12577161366600381129"
 
 # DEADBAND RANGE'S
-DRIVE_DB_RANGE = None
-ARM_DB_RANGE = None
+DRIVE_DB_RANGE = 0.05
 
 ##### CONTROLLS SECTION #####
 
@@ -63,15 +62,28 @@ def teleop_setup():
 
 def teleop_main():
     # updates the velocity param value of the motor, on condition TRUE
-    if JOYSTICK_LY() != 0:
+    if JOYSTICK_LY() >= abs(DRIVE_DB_RANGE):
         Robot.set_value(DRIVE_CONTROLLER_ID, "velocity" + TREAD_ID_L, JOYSTICK_LY())
-    if JOYSTICK_RY() != 0:
+    else:
+        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity" + TREAD_ID_L, 0)
+    if JOYSTICK_RY() >= abs(DRIVE_DB_RANGE):
         Robot.set_value(DRIVE_CONTROLLER_ID, "velocity" + TREAD_ID_R, JOYSTICK_RY())
+    else:
+        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity" + TREAD_ID_R, 0)
     if ARM_UL() != 0:
         Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_L, ARM_SPEED)
+    else:
+        Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_L, 0)
     if ARM_UR() != 0:
         Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_R, ARM_SPEED)
+    else:
+        Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_R, 0)
     if ARM_DL() != 0:
         Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_L, ARM_SPEED*-1)
+    else:
+        Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_L, 0)
     if ARM_DR() != 0:
         Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_R, ARM_SPEED*-1)
+    else:
+        Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_R, 0)
+
