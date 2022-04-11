@@ -53,12 +53,7 @@ def autonomous_main():
 
 
 def teleop_setup():
-    # sets the inverts for the individual motors on each controller
-    Robot.set_value(DRIVE_CONTROLLER_ID, "invert" + TREAD_ID_L, TREAD_INVERT_L)
-    Robot.set_value(DRIVE_CONTROLLER_ID, "invert" + TREAD_ID_R, TREAD_INVERT_R)
-    Robot.set_value(ARM_CONTROLLER_ID, "invert" + ARM_ID_L, ARM_INVERT)
-    Robot.set_value(ARM_CONTROLLER_ID, "invert" + ARM_ID_R, ARM_INVERT)
-
+    autonomous_setup()
 
 def teleop_main():
     # updates the velocity param value of the motor, on condition TRUE
@@ -70,20 +65,9 @@ def teleop_main():
         Robot.set_value(DRIVE_CONTROLLER_ID, "velocity" + TREAD_ID_R, JOYSTICK_RY())
     else:
         Robot.set_value(DRIVE_CONTROLLER_ID, "velocity" + TREAD_ID_R, 0)
-    if ARM_UL() != 0:
-        Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_L, ARM_SPEED)
-    else:
-        Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_L, 0)
-    if ARM_UR() != 0:
-        Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_R, ARM_SPEED)
-    else:
-        Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_R, 0)
-    if ARM_DL() != 0:
-        Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_L, ARM_SPEED*-1)
-    else:
-        Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_L, 0)
-    if ARM_DR() != 0:
-        Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_R, ARM_SPEED*-1)
-    else:
-        Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_R, 0)
+        
+    Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_L, ARM_SPEED*ARM_UL())
+    Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_R, ARM_SPEED*ARM_UR())
+    Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_L, ARM_SPEED*ARM_DL()*-1)
+    Robot.set_value(ARM_CONTROLLER_ID, "velocity" + ARM_ID_R, ARM_SPEED*ARM_DR()*-1)
 
