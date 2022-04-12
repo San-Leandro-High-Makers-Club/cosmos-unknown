@@ -26,11 +26,17 @@ def target_right_drive_motor_velocity():
 
 
 # How to determine the desired arm motor velocity during teleop mode
-ARM_UR: bool = lambda: Gamepad.get_value("l_bumper")
-ARM_UL: bool = lambda: Gamepad.get_value("r_bumper")
+def target_left_arm_motor_velocity():
+    velocity = int(Gamepad.get_value("l_bumper"))
+    velocity -= int(Gamepad.get_value("l_trigger"))
+    return ARM_SPEED * velocity
 
-ARM_DR: bool = lambda: Gamepad.get_value("r_trigger")
-ARM_DL: bool = lambda: Gamepad.get_value("l_trigger")
+
+def target_right_arm_motor_velocity():
+    velocity = int(Gamepad.get_value("r_bumper"))
+    velocity -= int(Gamepad.get_value("r_trigger"))
+    return ARM_SPEED * velocity
+
 
 # Which drive motor (a or b) is attached to the right and left wheels
 L_DRIVE_MOTOR = 'a'
@@ -84,7 +90,5 @@ def teleop_main():
     Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, target_left_drive_motor_velocity())
     Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, target_right_drive_motor_velocity())
 
-    Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + L_ARM_MOTOR, ARM_SPEED * ARM_UL())
-    Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + R_ARM_MOTOR, ARM_SPEED * ARM_UR())
-    Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + L_ARM_MOTOR, ARM_SPEED * ARM_DL() * -1)
-    Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + R_ARM_MOTOR, ARM_SPEED * ARM_DR() * -1)
+    Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + L_ARM_MOTOR, target_left_arm_motor_velocity())
+    Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + R_ARM_MOTOR, target_right_arm_motor_velocity())
