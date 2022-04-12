@@ -27,15 +27,15 @@ def target_right_drive_motor_velocity():
 
 # How to determine the desired arm motor velocity during teleop mode
 def target_left_arm_motor_velocity():
-    velocity = int(Gamepad.get_value("l_bumper"))
-    velocity -= int(Gamepad.get_value("l_trigger"))
-    return ARM_SPEED * velocity
+    direction = int(Gamepad.get_value("l_bumper"))
+    direction -= int(Gamepad.get_value("l_trigger"))
+    return ARM_SPEED * direction
 
 
 def target_right_arm_motor_velocity():
-    velocity = int(Gamepad.get_value("r_bumper"))
-    velocity -= int(Gamepad.get_value("r_trigger"))
-    return ARM_SPEED * velocity
+    direction = int(Gamepad.get_value("r_bumper"))
+    direction -= int(Gamepad.get_value("r_trigger"))
+    return ARM_SPEED * direction
 
 
 # Which drive motor (a or b) is attached to the right and left wheels
