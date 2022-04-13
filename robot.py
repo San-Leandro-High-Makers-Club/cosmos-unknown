@@ -8,6 +8,7 @@
 # Device IDs
 DRIVE_CONTROLLER_ID = "6_1491370133845894324"
 ARM_CONTROLLER_ID = "6_12577161366600381129"
+LINE_FOLLOWER_ID = "2_3"
 
 
 # How to determine the desired drive motor velocity during teleop mode
@@ -55,6 +56,9 @@ INVERT_R_ARM_MOTOR = False
 # Speed at which the arms should raise and lower
 ARM_SPEED = 1.0
 
+# Speed at which the robot should drive during autonomous mode
+AUTONOMOUS_SPEED = 0.8
+
 
 #########################
 #                       #
@@ -64,6 +68,18 @@ ARM_SPEED = 1.0
 
 
 def autonomous_setup():
+    teleop_setup()
+    
+    # Begin moving straight from the starting zone
+    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, AUTONOMOUS_SPEED)
+    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, AUTONOMOUS_SPEED)
+
+
+def autonomous_main():
+    pass
+
+
+def teleop_setup():
     # Set inversions for each motor
     Robot.set_value(DRIVE_CONTROLLER_ID, "invert_" + L_DRIVE_MOTOR, INVERT_L_DRIVE_MOTOR)
     Robot.set_value(DRIVE_CONTROLLER_ID, "invert_" + R_DRIVE_MOTOR, INVERT_R_DRIVE_MOTOR)
@@ -75,14 +91,6 @@ def autonomous_setup():
     Robot.set_value(DRIVE_CONTROLLER_ID, "pid_enabled_" + R_DRIVE_MOTOR, False)
     Robot.set_value(ARM_CONTROLLER_ID, "pid_enabled_" + L_ARM_MOTOR, False)
     Robot.set_value(ARM_CONTROLLER_ID, "pid_enabled_" + R_ARM_MOTOR, False)
-
-
-def autonomous_main():
-    pass
-
-
-def teleop_setup():
-    autonomous_setup()
 
 
 def teleop_main():
