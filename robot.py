@@ -14,14 +14,14 @@ LEADING_LINE_FOLLOWER_ID = "2_4"
 
 # How to determine the desired drive motor velocity during teleop mode
 def target_left_drive_motor_velocity():
-    velocity: float = Gamepad.get_value("joystick_left_y")
+    velocity: float = -Gamepad.get_value("joystick_left_y")
     if abs(velocity) < 0.1:
         velocity = 0
     return velocity
 
 
 def target_right_drive_motor_velocity():
-    velocity: float = Gamepad.get_value("joystick_right_y")
+    velocity: float = -Gamepad.get_value("joystick_right_y")
     if abs(velocity) < 0.1:
         velocity = 0
     return velocity
@@ -49,8 +49,8 @@ L_ARM_MOTOR = 'b'
 R_ARM_MOTOR = 'a'
 
 # Whether the direction of the motors should be inverted
-INVERT_L_DRIVE_MOTOR = False
-INVERT_R_DRIVE_MOTOR = True
+INVERT_L_DRIVE_MOTOR = True
+INVERT_R_DRIVE_MOTOR = False
 INVERT_L_ARM_MOTOR = False
 INVERT_R_ARM_MOTOR = False
 
