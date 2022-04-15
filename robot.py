@@ -93,7 +93,7 @@ def autonomous_main():
     pass
 
 
-def drive_forward(distance: int, speed=AUTONOMOUS_SPEED, tolerance=20, stop=True) -> None:
+def drive_forward(distance: int, speed=AUTONOMOUS_SPEED, tolerance=100, stop=True) -> None:
     """Drive in a straight line for the specified distance, decelerating near the end
     
     :param distance: the distance to drive (as an encoder value). If negative, drive in reverse.
@@ -126,7 +126,7 @@ def drive_forward(distance: int, speed=AUTONOMOUS_SPEED, tolerance=20, stop=True
     def average_distance_travelled():
         return int((left_motor_distance_travelled() + right_motor_distance_travelled()) / 2)
 
-    while abs(distance - average_distance_travelled()) > 100:  # TODO: calibrate
+    while abs(distance - average_distance_travelled()) > 500:  # TODO: calibrate
         Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, speed)
         Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, speed)
 
