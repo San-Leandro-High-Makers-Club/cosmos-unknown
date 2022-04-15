@@ -6,6 +6,8 @@ R_DRIVE_MOTOR = 'b'
 INVERT_L_DRIVE_MOTOR = False
 INVERT_R_DRIVE_MOTOR = True
 
+AUTONOMOUS_SPEED = 1.0
+
 
 def autonomous_setup():
     Robot.set_value(DRIVE_CONTROLLER_ID, "invert_" + L_DRIVE_MOTOR, INVERT_L_DRIVE_MOTOR)
@@ -17,10 +19,10 @@ def autonomous_setup():
     Robot.set_value(DRIVE_CONTROLLER_ID, "enc_" + L_DRIVE_MOTOR, 0)
     Robot.set_value(DRIVE_CONTROLLER_ID, "enc_" + R_DRIVE_MOTOR, 0)
 
-    
+
 def autonomous_main():
     drive_forward(500)
-    
+
 
 def drive_forward(distance: int, speed=AUTONOMOUS_SPEED, tolerance=20, stop=True) -> None:
     """Drive in a straight line for the specified distance, decelerating near the end
