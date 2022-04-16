@@ -8,6 +8,7 @@
 # Device IDs
 DRIVE_CONTROLLER_ID = "6_1491370133845894324"
 ARM_CONTROLLER_ID = "6_12577161366600381129"
+LIMIT_SWITCH_CONTROLLER = ""
 CENTRE_LINE_FOLLOWER_ID = "2_3"
 LEADING_LINE_FOLLOWER_ID = "2_4"
 
@@ -67,8 +68,9 @@ ON_LINE_THRESHOLD = 0.18
 OFF_LINE_THRESHOLD = 0.12
 
 # The distance (as an encoder value) between the line follower sensors
-LINE_FOLLOWER_SEPARATION: 100  # TODO: calibrate
+LINE_FOLLOWER_SEPARATION: 100  # TODO: calibrate'
 
+ARM_POSITIONS = {}
 
 #########################
 #                       #
@@ -95,7 +97,7 @@ def autonomous_main():
 
 def drive_forward(distance: int, speed=AUTONOMOUS_SPEED, tolerance=100, stop=True) -> None:
     """Drive in a straight line for the specified distance, decelerating near the end
-    
+
     :param distance: the distance to drive (as an encoder value). If negative, drive in reverse.
     :param speed: the speed at which to primarily drive. If extremely low, simply return immediately.
     :param tolerance: the maximum distance (as an encoder value) by which it is acceptable to deviate from the specified
@@ -144,6 +146,11 @@ def drive_forward(distance: int, speed=AUTONOMOUS_SPEED, tolerance=100, stop=Tru
         if abs(distance - average_distance_travelled()) > tolerance:
             adjustment_distance = -abs(distance - average_distance_travelled())
             drive_forward(adjustment_distance, 0.5 * speed, tolerance, stop)
+
+def arm_controll():
+    while True:
+        Robot.get_value(LIMIT_SWITCH_CONTROLLER, "switch")
+
 
 
 def teleop_setup():
