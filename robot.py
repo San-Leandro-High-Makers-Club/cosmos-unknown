@@ -8,7 +8,7 @@
 # Device IDs
 DRIVE_CONTROLLER_ID = "6_1491370133845894324"
 ARM_CONTROLLER_ID = "6_12577161366600381129"
-LIMIT_SWITCH_CONTROLLER = ""
+LIMIT_SWITCH_ID = ""
 CENTRE_LINE_FOLLOWER_ID = "2_3"
 LEADING_LINE_FOLLOWER_ID = "2_4"
 
@@ -29,6 +29,7 @@ def target_right_drive_motor_velocity():
         velocity = 0
     return velocity
 
+# Buttons used to manually move the arm
 ARM_UP_BUTTON = "l_bumper"
 ARM_DOWN_BUTTON = "l_trigger"
 
@@ -60,6 +61,13 @@ OFF_LINE_THRESHOLD = 0.12
 
 # The distance (as an encoder value) between the line follower sensors
 LINE_FOLLOWER_SEPARATION: 100  # TODO: calibrate'
+
+# Preset arm encoder positions
+ARM_POSITIONS = {
+    "button_a": 0, # highest position
+    "button_b": -500  # lowest position
+}
+
 
 #########################
 #                       #
@@ -145,20 +153,16 @@ def drive_forward(distance: int, speed=AUTONOMOUS_SPEED, tolerance=100, stop=Tru
             adjustment_distance = -abs(distance - average_distance_travelled())
             drive_forward(adjustment_distance, 0.5 * speed, tolerance, stop)
 
-ARM_POSITIONS = {
-    "button_a": 0, # TOP
-    "button_b": -500# BOTTOM
-}
 
 def arm_controll():
     while True:
-        bottom_switch_pressed: bool = Robot.get_value(LIMIT_SWITCH_CONTROLLER, BOTTOM_LIMIT_SWITCH)
-        top_switch_pressed: bool = Robot.get_value(LIMIT_SWITCH_CONTROLLER, TOP_LIMIT_SWITCH)
-        move_arm_up = Gamepad.get_value(ARM_UP_BUTTON)
-        move_arm_down = Gamepad.get_value(ARM_DOWN_BUTTON)
+        bottom_switch_pressed: bool = Robot.get_value(LIMIT_SWITCH_ID, BOTTOM_LIMIT_SWITCH)
+        top_switch_pressed: bool = Robot.get_value(LIMIT_SWITCH_ID, TOP_LIMIT_SWITCH)
+        move_arm_up: bool = Gamepad.get_value(ARM_UP_BUTTON)
+        move_arm_down: bool = Gamepad.get_value(ARM_DOWN_BUTTON)
 
         desired_preset = ""
-        for button in ARM_POSITIONS.keys():
+        for button in list(ARM_POSITIONS):
             if Gamepad.get_value(button):
                 if desired_preset == "":
                     desired_preset = button
@@ -188,17 +192,10 @@ def arm_controll():
             else:
                 Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
         else:
-            encoder_value = Robot.get_value(ARM_CONTROLLER_ID, "enc_"+ARM_MOTOR)
+            encoder_value = Robot.get_value(ARM_CONTROLLER_ID, "enc_" + ARM_MOTOR)
             while encoder_value <= ARM_POSITIONS[desired_preset]:
                 Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, ARM_SPEED)
             Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
-
-
-
-
-
-
-
 
 
 def teleop_setup():
@@ -214,7 +211,7 @@ def teleop_setup():
     Robot.set_value(ARM_CONTROLLER_ID, "pid_enabled_" + PINCER_MOTOR, False)
     Robot.set_value(ARM_CONTROLLER_ID, "pid_enabled_" + ARM_MOTOR, False)
 
-    Robot.run(arm_controll)
+    Robot.run(arm_control)
 
 
 def teleop_main():
