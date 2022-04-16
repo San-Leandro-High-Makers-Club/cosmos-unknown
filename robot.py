@@ -12,6 +12,8 @@ LIMIT_SWITCH_CONTROLLER = ""
 CENTRE_LINE_FOLLOWER_ID = "2_3"
 LEADING_LINE_FOLLOWER_ID = "2_4"
 
+TOP_LIMIT_SWITCH = "switch0"
+BOTTOM_LIMIT_SWITCH = "switch1"
 
 # How to determine the desired drive motor velocity during teleop mode
 def target_left_drive_motor_velocity():
@@ -27,33 +29,22 @@ def target_right_drive_motor_velocity():
         velocity = 0
     return velocity
 
-
-# How to determine the desired arm motor velocity during teleop mode
-def target_left_arm_motor_velocity():
-    direction = int(Gamepad.get_value("l_bumper"))
-    direction -= int(Gamepad.get_value("l_trigger"))
-    return ARM_SPEED * direction
-
-
-def target_right_arm_motor_velocity():
-    direction = int(Gamepad.get_value("r_bumper"))
-    direction -= int(Gamepad.get_value("r_trigger"))
-    return ARM_SPEED * direction
-
+ARM_UP_BUTTON = "l_bumper"
+ARM_DOWN_BUTTON = "l_trigger"
 
 # Which drive motor (a or b) is attached to the right and left wheels
 L_DRIVE_MOTOR = 'a'
 R_DRIVE_MOTOR = 'b'
 
 # Which arm motor (a or b) is attached to the base of each arm
-L_ARM_MOTOR = 'b'
-R_ARM_MOTOR = 'a'
+PINCER_MOTOR = 'b'
+ARM_MOTOR = 'a'
 
 # Whether the direction of the motors should be inverted
 INVERT_L_DRIVE_MOTOR = True
 INVERT_R_DRIVE_MOTOR = False
-INVERT_L_ARM_MOTOR = False
-INVERT_R_ARM_MOTOR = False
+INVERT_PINCER_MOTOR = False
+INVERT_ARM_MOTOR = False
 
 # Speed at which the arms should raise and lower
 ARM_SPEED = 1.0
@@ -70,8 +61,6 @@ OFF_LINE_THRESHOLD = 0.12
 # The distance (as an encoder value) between the line follower sensors
 LINE_FOLLOWER_SEPARATION: 100  # TODO: calibrate'
 
-ARM_POSITIONS = {}
-
 #########################
 #                       #
 # End of configuration  #
@@ -80,7 +69,16 @@ ARM_POSITIONS = {}
 
 
 def autonomous_setup():
-    teleop_setup()
+    Robot.set_value(DRIVE_CONTROLLER_ID, "invert_" + L_DRIVE_MOTOR, INVERT_L_DRIVE_MOTOR)
+    Robot.set_value(DRIVE_CONTROLLER_ID, "invert_" + R_DRIVE_MOTOR, INVERT_R_DRIVE_MOTOR)
+    Robot.set_value(ARM_CONTROLLER_ID, "invert_" + PINCER_MOTOR, INVERT_PINCER_MOTOR)
+    Robot.set_value(ARM_CONTROLLER_ID, "invert_" + ARM_MOTOR, INVERT_ARM_MOTOR)
+
+    # Disable PID on each motor due to hardware issues
+    Robot.set_value(DRIVE_CONTROLLER_ID, "pid_enabled_" + L_DRIVE_MOTOR, False)
+    Robot.set_value(DRIVE_CONTROLLER_ID, "pid_enabled_" + R_DRIVE_MOTOR, False)
+    Robot.set_value(ARM_CONTROLLER_ID, "pid_enabled_" + PINCER_MOTOR, False)
+    Robot.set_value(ARM_CONTROLLER_ID, "pid_enabled_" + ARM_MOTOR, False)
 
     # Reset the drive encoders
     Robot.set_value(DRIVE_CONTROLLER_ID, "enc_" + L_DRIVE_MOTOR, 0)
@@ -147,9 +145,59 @@ def drive_forward(distance: int, speed=AUTONOMOUS_SPEED, tolerance=100, stop=Tru
             adjustment_distance = -abs(distance - average_distance_travelled())
             drive_forward(adjustment_distance, 0.5 * speed, tolerance, stop)
 
+ARM_POSITIONS = {
+    "button_a": 0, # TOP
+    "button_b": -500# BOTTOM
+}
+
 def arm_controll():
     while True:
-        Robot.get_value(LIMIT_SWITCH_CONTROLLER, "switch")
+        bottom_switch_pressed: bool = Robot.get_value(LIMIT_SWITCH_CONTROLLER, BOTTOM_LIMIT_SWITCH)
+        top_switch_pressed: bool = Robot.get_value(LIMIT_SWITCH_CONTROLLER, TOP_LIMIT_SWITCH)
+        move_arm_up = Gamepad.get_value(ARM_UP_BUTTON)
+        move_arm_down = Gamepad.get_value(ARM_DOWN_BUTTON)
+
+        desired_preset = ""
+        for button in ARM_POSITIONS.keys():
+            if Gamepad.get_value(button):
+                if desired_preset == "":
+                    desired_preset = button
+                else:
+                    desired_preset = ""
+                    break
+
+        if desired_preset == "":
+            if move_arm_up and move_arm_down:
+                move_arm_up = False
+                move_arm_down = False
+
+            if top_switch_pressed:
+                Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
+                Robot.set_value(ARM_CONTROLLER_ID, "enc_"+ARM_MOTOR, ARM_POSITIONS["button_a"])
+                move_arm_up = False
+
+            if bottom_switch_pressed:
+                Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
+                Robot.set_value(ARM_CONTROLLER_ID, "enc_"+ARM_MOTOR, ARM_POSITIONS["button_b"])
+                move_arm_down = False
+
+            if move_arm_up:
+                Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, ARM_SPEED)
+            elif move_arm_down:
+                Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, -ARM_SPEED)
+            else:
+                Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
+        else:
+            encoder_value = Robot.get_value(ARM_CONTROLLER_ID, "enc_"+ARM_MOTOR)
+            while encoder_value <= ARM_POSITIONS[desired_preset]:
+                Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, ARM_SPEED)
+            Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
+
+
+
+
+
+
 
 
 
@@ -157,20 +205,19 @@ def teleop_setup():
     # Set inversions for each motor
     Robot.set_value(DRIVE_CONTROLLER_ID, "invert_" + L_DRIVE_MOTOR, INVERT_L_DRIVE_MOTOR)
     Robot.set_value(DRIVE_CONTROLLER_ID, "invert_" + R_DRIVE_MOTOR, INVERT_R_DRIVE_MOTOR)
-    Robot.set_value(ARM_CONTROLLER_ID, "invert_" + L_ARM_MOTOR, INVERT_L_ARM_MOTOR)
-    Robot.set_value(ARM_CONTROLLER_ID, "invert_" + R_ARM_MOTOR, INVERT_R_ARM_MOTOR)
+    Robot.set_value(ARM_CONTROLLER_ID, "invert_" + PINCER_MOTOR, INVERT_PINCER_MOTOR)
+    Robot.set_value(ARM_CONTROLLER_ID, "invert_" + ARM_MOTOR, INVERT_ARM_MOTOR)
 
     # Disable PID on each motor due to hardware issues
     Robot.set_value(DRIVE_CONTROLLER_ID, "pid_enabled_" + L_DRIVE_MOTOR, False)
     Robot.set_value(DRIVE_CONTROLLER_ID, "pid_enabled_" + R_DRIVE_MOTOR, False)
-    Robot.set_value(ARM_CONTROLLER_ID, "pid_enabled_" + L_ARM_MOTOR, False)
-    Robot.set_value(ARM_CONTROLLER_ID, "pid_enabled_" + R_ARM_MOTOR, False)
+    Robot.set_value(ARM_CONTROLLER_ID, "pid_enabled_" + PINCER_MOTOR, False)
+    Robot.set_value(ARM_CONTROLLER_ID, "pid_enabled_" + ARM_MOTOR, False)
+
+    Robot.run(arm_controll)
 
 
 def teleop_main():
     # Update velocity of each motor
     Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, target_left_drive_motor_velocity())
     Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, target_right_drive_motor_velocity())
-
-    Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + L_ARM_MOTOR, target_left_arm_motor_velocity())
-    Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + R_ARM_MOTOR, target_right_arm_motor_velocity())
