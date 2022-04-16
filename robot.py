@@ -193,8 +193,11 @@ def arm_controll():
                 Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
         else:
             encoder_value = Robot.get_value(ARM_CONTROLLER_ID, "enc_" + ARM_MOTOR)
-            while encoder_value <= ARM_POSITIONS[desired_preset]:
-                Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, ARM_SPEED)
+            while encoder_value != ARM_POSITIONS[desired_preset]:
+                if encoder_value < ARM_POSITIONS[desired_preset]:
+                    Robot.set_value(ARM_MOTOR_ID, "velocity" + ARM_MOTOR, ARM_SPEED)
+                elif encoder_value > ARM_POSITIONS[desired_preset]:
+                    Robot.set_value(ARM_MOTOR_ID, "velocity" + ARM_MOTOR, -ARM_SPEED)
             Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
 
 
