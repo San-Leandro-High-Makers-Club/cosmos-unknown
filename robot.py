@@ -68,6 +68,9 @@ ARM_POSITIONS = {
     "button_b": -500  # lowest position
 }
 
+# Maximum acceptable deviation (as an encoder value) from the arm position when using a preset
+ARM_POSITION_TOLERANCE = 8
+
 
 #########################
 #                       #
@@ -177,12 +180,12 @@ def arm_control():
 
             if top_switch_pressed:
                 Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
-                Robot.set_value(ARM_CONTROLLER_ID, "enc_"+ARM_MOTOR, ARM_POSITIONS["button_a"])
+                Robot.set_value(ARM_CONTROLLER_ID, "enc_" + ARM_MOTOR, max(ARM_POSITIONS.values()))
                 move_arm_up = False
 
             if bottom_switch_pressed:
                 Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
-                Robot.set_value(ARM_CONTROLLER_ID, "enc_"+ARM_MOTOR, ARM_POSITIONS["button_b"])
+                Robot.set_value(ARM_CONTROLLER_ID, "enc_" + ARM_MOTOR, min(ARM_POSITIONS.values()))
                 move_arm_down = False
 
             if move_arm_up:
@@ -193,11 +196,12 @@ def arm_control():
                 Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
         else:
             encoder_value = Robot.get_value(ARM_CONTROLLER_ID, "enc_" + ARM_MOTOR)
-            while encoder_value != ARM_POSITIONS[desired_preset]:
+            while abs(encoder_value - ARM_POSITIONS[desired_preset]) > ARM_POSITION_TOLERANCE:
                 if encoder_value < ARM_POSITIONS[desired_preset]:
                     Robot.set_value(ARM_MOTOR_ID, "velocity" + ARM_MOTOR, ARM_SPEED)
                 elif encoder_value > ARM_POSITIONS[desired_preset]:
                     Robot.set_value(ARM_MOTOR_ID, "velocity" + ARM_MOTOR, -ARM_SPEED)
+                encoder_value = Robot.get_value(ARM_CONTROLLER_ID, "enc_" + ARM_MOTOR)
             Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
 
 
