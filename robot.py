@@ -154,7 +154,7 @@ def drive_forward(distance: int, speed=AUTONOMOUS_SPEED, tolerance=100, stop=Tru
             drive_forward(adjustment_distance, 0.5 * speed, tolerance, stop)
 
 
-def arm_controll():
+def arm_control():
     while True:
         bottom_switch_pressed: bool = Robot.get_value(LIMIT_SWITCH_ID, BOTTOM_LIMIT_SWITCH)
         top_switch_pressed: bool = Robot.get_value(LIMIT_SWITCH_ID, TOP_LIMIT_SWITCH)
