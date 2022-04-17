@@ -213,6 +213,8 @@ def arm_control():
                 else:
                     desired_preset = ""
                     break
+                
+        print("desired preset", desired_preset)
 
         if desired_preset == "":
             if move_arm_up and move_arm_down:
@@ -267,6 +269,8 @@ def teleop_setup():
     Robot.set_value(DRIVE_CONTROLLER_ID, "pid_enabled_" + R_DRIVE_MOTOR, False)
     Robot.set_value(ARM_CONTROLLER_ID, "pid_enabled_" + PINCER_MOTOR, False)
     Robot.set_value(ARM_CONTROLLER_ID, "pid_enabled_" + ARM_MOTOR, False)
+    
+    Robot.run(arm_control)
 
 
 def teleop_main():
