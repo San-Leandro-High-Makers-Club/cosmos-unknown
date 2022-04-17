@@ -1,3 +1,6 @@
+from typing import Dict
+
+
 #########################
 #                       #
 # Configuration         #
@@ -117,11 +120,27 @@ def autonomous_setup():
     Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, AUTONOMOUS_SPEED)
 
 
-def get_sensor_values(sensors: dict) -> list:
-    sensor_values = {}
-    for sensor in  sensors.keys():
-        sensor_values.append(Robot.get_value(CENTER_LINE_FOLLOWER_ID, sensor))
-    return sensor_values
+def get_line_follower_values(line_follower: str) -> Dict[str, float]:
+    """Return the sensor readings of a line follower as a dictionary
+    
+    :param line_follower: the line follower to use. Must be "center" or "leading".
+    :return: a dictionary which maps the true positions of each of the three infrared sensors ("left", "center", or
+        "right") to the reflected light value of that sensor, or an empty dictionary if an invalid line_follower
+        parameter was used
+    """
+    
+    if line_follower == "center":
+        values = {}
+        for sensor in list(CENTER_LINE_FOLLOWER_SENSORS):
+            values[sensor] = Robot.get_value(CENTER_LINE_FOLLOWER_ID, sensor)
+        return values
+    elif line_follower == "leading":
+        values = {}
+        for sensor in list(LEADING_LINE_FOLLOWER_SENSORS):
+            values[sensor] = Robot.get_value(LEADING_LINE_FOLLOWER_ID, sensor)
+        return values
+    else:
+        return {}
 
 
 def autonomous_main():
