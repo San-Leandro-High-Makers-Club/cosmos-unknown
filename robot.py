@@ -123,7 +123,8 @@ def autonomous_setup():
 def get_line_follower_values(line_follower: str) -> Dict[str, float]:
     """Return the sensor readings of a line follower as a dictionary
     
-    :param line_follower: the line follower to use. Must be "center" or "leading".
+    :param line_follower: a string (either "center" or "leading") representing which of the two line followers (the one
+        mounted underneath the center of the robot, or the one underneath the front) from which to obtain values
     :return: a dictionary which maps the true positions of each of the three infrared sensors ("left", "center", or
         "right") to the reflected light value of that sensor, or an empty dictionary if an invalid line_follower
         parameter was used
