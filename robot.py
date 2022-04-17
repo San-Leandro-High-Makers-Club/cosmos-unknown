@@ -12,8 +12,10 @@ LIMIT_SWITCH_ID = ""
 CENTRE_LINE_FOLLOWER_ID = "2_3"
 LEADING_LINE_FOLLOWER_ID = "2_4"
 
+# Which limit switch is located at each end of the arm's range
 TOP_LIMIT_SWITCH = "switch0"
 BOTTOM_LIMIT_SWITCH = "switch1"
+
 
 # How to determine the desired drive motor velocity during teleop mode
 def target_left_drive_motor_velocity():
@@ -28,6 +30,7 @@ def target_right_drive_motor_velocity():
     if abs(velocity) < 0.1:
         velocity = 0
     return velocity
+
 
 # Buttons used to manually move the arm
 ARM_UP_BUTTON = "l_bumper"
@@ -60,11 +63,12 @@ ON_LINE_THRESHOLD = 0.18
 OFF_LINE_THRESHOLD = 0.12
 
 # The distance (as an encoder value) between the line follower sensors
-LINE_FOLLOWER_SEPARATION: 100  # TODO: calibrate'
+LINE_FOLLOWER_SEPARATION: 100  # TODO: calibrate
 
 # Preset arm encoder positions
+# The key is the gamepad button used to activate the preset; the value is the preset encoder position
 ARM_POSITIONS = {
-    "button_a": 0, # highest position
+    "button_a": 0,  # highest position
     "button_b": -500  # lowest position
 }
 
@@ -77,6 +81,7 @@ ARM_POSITION_TOLERANCE = 8
 # End of configuration  #
 #                       #
 #########################
+
 
 def autonomous_setup():
     # Set inversions for each motor
