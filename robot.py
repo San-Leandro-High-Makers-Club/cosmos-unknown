@@ -13,12 +13,12 @@ CENTER_LINE_FOLLOWER_ID = "2_3"
 LEADING_LINE_FOLLOWER_ID = "2_4"
 
 # Which of the three infrared sensors are actually on each side of the line followers
-CENTER_LINE_FOLLOWER_SENSORS: {
+CENTER_LINE_FOLLOWER_SENSORS = {
     "left": "left",
     "center": "center",
     "right": "right"
 }
-LEADING_LINE_FOLLOWER_SENSORS: {
+LEADING_LINE_FOLLOWER_SENSORS = {
     "left": "left",
     "center": "center",
     "right": "right"
@@ -115,6 +115,13 @@ def autonomous_setup():
     # Begin moving straight from the starting zone
     Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, AUTONOMOUS_SPEED)
     Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, AUTONOMOUS_SPEED)
+
+
+def get_sensor_values(sensors: dict) -> list:
+    sensor_values = {}
+    for sensor in  sensors.keys():
+        sensor_values.append(Robot.get_value(CENTER_LINE_FOLLOWER_ID, sensor))
+    return sensor_values
 
 
 def autonomous_main():
