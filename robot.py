@@ -56,8 +56,8 @@ L_DRIVE_MOTOR = 'a'
 R_DRIVE_MOTOR = 'b'
 
 # Which arm motor (a or b) is attached to the base of each arm
-PINCER_MOTOR = 'a'
-ARM_MOTOR = 'b'
+PINCER_MOTOR = 'b'
+ARM_MOTOR = 'a'
 
 # Whether the direction of the motors should be inverted
 INVERT_L_DRIVE_MOTOR = True
@@ -214,8 +214,6 @@ def arm_control():
                     desired_preset = ""
                     break
                 
-        print("desired preset", desired_preset)
-
         if desired_preset == "":
             if move_arm_up and move_arm_down:
                 move_arm_up = False
