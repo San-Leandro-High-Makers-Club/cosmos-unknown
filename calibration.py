@@ -1,6 +1,6 @@
 DRIVE_CONTROLLER_ID = "6_1491370133845894324"
 CENTER_LINE_FOLLOWER_ID = "2_1187947831541557793"
-LEADING_LINE_FOLLOWER_ID = "2_17787866091254328692" #
+LEADING_LINE_FOLLOWER_ID = "2_17787866091254328692" 
 
 CENTER_LINE_FOLLOWER_SENSORS = {
     "left": "left",
@@ -36,10 +36,10 @@ def autonomous_main():
 def teleop_setup():
     Robot.set_value(DRIVE_CONTROLLER_ID, "invert_" + L_DRIVE_MOTOR, INVERT_L_DRIVE_MOTOR)
     Robot.set_value(DRIVE_CONTROLLER_ID, "invert_" + R_DRIVE_MOTOR, INVERT_R_DRIVE_MOTOR)
-    
+
     Robot.set_value(DRIVE_CONTROLLER_ID, "pid_enabled_" + L_DRIVE_MOTOR, False)
     Robot.set_value(DRIVE_CONTROLLER_ID, "pid_enabled_" + R_DRIVE_MOTOR, False)
-    
+
     Robot.set_value(DRIVE_CONTROLLER_ID, "enc_" + L_DRIVE_MOTOR, 0)
     Robot.set_value(DRIVE_CONTROLLER_ID, "enc_" + R_DRIVE_MOTOR, 0)
 
@@ -49,7 +49,7 @@ def teleop_main():
         drive_forward(3000)
     if Gamepad.get_value("dpad_down"):
         drive_forward(-3000)
-    
+
     left_speed = -Gamepad.get_value("joystick_left_y")
     right_speed = -Gamepad.get_value("joystick_right_y")
     if abs(left_speed) > 0.1:
@@ -60,7 +60,7 @@ def teleop_main():
         Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, right_speed)
     else:
         Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, 0)
-    
+
     if Gamepad.get_value("button_a"):
         while True:
             if Gamepad.get_value("button_b"):

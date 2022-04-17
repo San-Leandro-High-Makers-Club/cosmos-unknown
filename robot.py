@@ -78,7 +78,7 @@ ON_LINE_THRESHOLD = 0.18
 OFF_LINE_THRESHOLD = 0.12
 
 # The distance (as an encoder value) between the line follower sensors
-LINE_FOLLOWER_SEPARATION: 100  # TODO: calibrate
+LINE_FOLLOWER_SEPARATION: 100  # TODO: calibrate 377
 
 # Preset arm encoder positions
 # The key is the gamepad button used to activate the preset; the value is the preset encoder position
@@ -122,14 +122,14 @@ def autonomous_setup():
 
 def get_line_follower_values(line_follower: str) -> Dict[str, float]:
     """Return the sensor readings of a line follower as a dictionary
-    
+
     :param line_follower: a string (either "center" or "leading") representing which of the two line followers (the one
         mounted underneath the center of the robot, or the one underneath the front) from which to obtain values
     :return: a dictionary which maps the true positions of each of the three infrared sensors ("left", "center", or
         "right") to the reflected light value of that sensor, or an empty dictionary if an invalid line_follower
         parameter was used
     """
-    
+
     if line_follower == "center":
         values = {}
         for sensor in list(CENTER_LINE_FOLLOWER_SENSORS):
@@ -213,12 +213,12 @@ def arm_control():
                 else:
                     desired_preset = ""
                     break
-                
+
         if desired_preset == "":
             if move_arm_up and move_arm_down:
                 move_arm_up = False
                 move_arm_down = False
-                
+
             """
             if top_switch_pressed:
                 Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
@@ -267,7 +267,7 @@ def teleop_setup():
     Robot.set_value(DRIVE_CONTROLLER_ID, "pid_enabled_" + R_DRIVE_MOTOR, False)
     Robot.set_value(ARM_CONTROLLER_ID, "pid_enabled_" + PINCER_MOTOR, False)
     Robot.set_value(ARM_CONTROLLER_ID, "pid_enabled_" + ARM_MOTOR, False)
-    
+
     Robot.run(arm_control)
 
 
