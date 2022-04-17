@@ -1,6 +1,5 @@
 from typing import Dict
 
-
 #########################
 #                       #
 # Configuration         #
@@ -78,7 +77,7 @@ ON_LINE_THRESHOLD = 0.18
 OFF_LINE_THRESHOLD = 0.12
 
 # The distance (as an encoder value) between the line follower sensors
-LINE_FOLLOWER_SEPARATION: 100  # TODO: calibrate 377
+LINE_FOLLOWER_SEPARATION: 377
 
 # Preset arm encoder positions
 # The key is the gamepad button used to activate the preset; the value is the preset encoder position
@@ -200,8 +199,8 @@ def drive_forward(distance: int, speed=AUTONOMOUS_SPEED, tolerance=34) -> None:
 
 def arm_control():
     while True:
-        #bottom_switch_pressed: bool = Robot.get_value(LIMIT_SWITCH_ID, BOTTOM_LIMIT_SWITCH)
-        #top_switch_pressed: bool = Robot.get_value(LIMIT_SWITCH_ID, TOP_LIMIT_SWITCH)
+        bottom_switch_pressed: bool = Robot.get_value(LIMIT_SWITCH_ID, BOTTOM_LIMIT_SWITCH)
+        top_switch_pressed: bool = Robot.get_value(LIMIT_SWITCH_ID, TOP_LIMIT_SWITCH)
         move_arm_up: bool = Gamepad.get_value(ARM_UP_BUTTON)
         move_arm_down: bool = Gamepad.get_value(ARM_DOWN_BUTTON)
 
@@ -219,7 +218,6 @@ def arm_control():
                 move_arm_up = False
                 move_arm_down = False
 
-            """
             if top_switch_pressed:
                 Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
                 Robot.set_value(ARM_CONTROLLER_ID, "enc_" + ARM_MOTOR, max(ARM_POSITIONS.values()))
@@ -229,7 +227,6 @@ def arm_control():
                 Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
                 Robot.set_value(ARM_CONTROLLER_ID, "enc_" + ARM_MOTOR, min(ARM_POSITIONS.values()))
                 move_arm_down = False
-                """
 
             if move_arm_up:
                 Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, ARM_SPEED)
