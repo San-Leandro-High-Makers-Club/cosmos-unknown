@@ -200,8 +200,8 @@ def drive_forward(distance: int, speed=AUTONOMOUS_SPEED, tolerance=34) -> None:
 
 def arm_control():
     while True:
-        bottom_switch_pressed: bool = Robot.get_value(LIMIT_SWITCH_ID, BOTTOM_LIMIT_SWITCH)
-        top_switch_pressed: bool = Robot.get_value(LIMIT_SWITCH_ID, TOP_LIMIT_SWITCH)
+        #bottom_switch_pressed: bool = Robot.get_value(LIMIT_SWITCH_ID, BOTTOM_LIMIT_SWITCH)
+        #top_switch_pressed: bool = Robot.get_value(LIMIT_SWITCH_ID, TOP_LIMIT_SWITCH)
         move_arm_up: bool = Gamepad.get_value(ARM_UP_BUTTON)
         move_arm_down: bool = Gamepad.get_value(ARM_DOWN_BUTTON)
 
@@ -218,7 +218,8 @@ def arm_control():
             if move_arm_up and move_arm_down:
                 move_arm_up = False
                 move_arm_down = False
-
+                
+            """
             if top_switch_pressed:
                 Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
                 Robot.set_value(ARM_CONTROLLER_ID, "enc_" + ARM_MOTOR, max(ARM_POSITIONS.values()))
@@ -228,6 +229,7 @@ def arm_control():
                 Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
                 Robot.set_value(ARM_CONTROLLER_ID, "enc_" + ARM_MOTOR, min(ARM_POSITIONS.values()))
                 move_arm_down = False
+                """
 
             if move_arm_up:
                 Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, ARM_SPEED)
