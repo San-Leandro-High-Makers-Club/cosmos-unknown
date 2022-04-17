@@ -265,8 +265,6 @@ def teleop_setup():
     Robot.set_value(ARM_CONTROLLER_ID, "pid_enabled_" + PINCER_MOTOR, False)
     Robot.set_value(ARM_CONTROLLER_ID, "pid_enabled_" + ARM_MOTOR, False)
 
-    Robot.run(arm_control)
-
 
 def teleop_main():
     # Update velocity of each motor
