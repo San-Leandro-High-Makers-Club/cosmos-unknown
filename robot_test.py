@@ -71,10 +71,8 @@ def teleop_setup():
     Robot.set_value(ARM_CONTROLLER_ID, "pid_enabled_" + PINCER_MOTOR, False)
     Robot.set_value(ARM_CONTROLLER_ID, "pid_enabled_" + ARM_MOTOR, False)
 
+
+def teleop_main():
     if Gamepad.get_value("button_y") and Gamepad.get_value("button_b"):
         Robot.run(arm_motors_test)
         Robot.sleep(2)
-
-
-def teleop_main():
-    pass
