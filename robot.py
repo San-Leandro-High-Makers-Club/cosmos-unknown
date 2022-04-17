@@ -53,8 +53,8 @@ L_DRIVE_MOTOR = 'a'
 R_DRIVE_MOTOR = 'b'
 
 # Which arm motor (a or b) is attached to the base of each arm
-PINCER_MOTOR = 'b'
-ARM_MOTOR = 'a'
+PINCER_MOTOR = 'a'
+ARM_MOTOR = 'b'
 
 # Whether the direction of the motors should be inverted
 INVERT_L_DRIVE_MOTOR = True
@@ -112,7 +112,7 @@ def autonomous_setup():
     Robot.set_value(DRIVE_CONTROLLER_ID, "enc_" + L_DRIVE_MOTOR, 0)
     Robot.set_value(DRIVE_CONTROLLER_ID, "enc_" + R_DRIVE_MOTOR, 0)
 
-    # Begin moving straight from the starting zone
+    # Begin moving straight frgit om the starting zone
     Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, AUTONOMOUS_SPEED)
     Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, AUTONOMOUS_SPEED)
 
