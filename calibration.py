@@ -1,4 +1,17 @@
 DRIVE_CONTROLLER_ID = "6_1491370133845894324"
+CENTER_LINE_FOLLOWER_ID = "2_3"
+LEADING_LINE_FOLLOWER_ID = "2_4"
+
+CENTER_LINE_FOLLOWER_SENSORS = {
+    "left": "left",
+    "center": "center",
+    "right": "right"
+}
+LEADING_LINE_FOLLOWER_SENSORS = {
+    "left": "left",
+    "center": "center",
+    "right": "right"
+}
 
 L_DRIVE_MOTOR = 'a'
 R_DRIVE_MOTOR = 'b'
@@ -8,10 +21,19 @@ INVERT_R_DRIVE_MOTOR = False
 
 AUTONOMOUS_SPEED = 1.0
 
-counter = 0
+ON_LINE_THRESHOLD = 0.18
+OFF_LINE_THRESHOLD = 0.12
 
 
 def autonomous_setup():
+    pass
+
+
+def autonomous_main():
+    pass
+
+
+def teleop_setup():
     Robot.set_value(DRIVE_CONTROLLER_ID, "invert_" + L_DRIVE_MOTOR, INVERT_L_DRIVE_MOTOR)
     Robot.set_value(DRIVE_CONTROLLER_ID, "invert_" + R_DRIVE_MOTOR, INVERT_R_DRIVE_MOTOR)
     
@@ -22,19 +44,33 @@ def autonomous_setup():
     Robot.set_value(DRIVE_CONTROLLER_ID, "enc_" + R_DRIVE_MOTOR, 0)
 
 
-def autonomous_main():
-    global counter
-    if counter == 0:
-        counter += 1
-        drive_forward(5000)
-
-
-def teleop_setup():
-    pass
-
-
 def teleop_main():
-    pass
+    if Gamepad.get_value("dpad_up"):
+        drive_forward(3000)
+    if Gamepad.get_value("dpad_down"):
+        drive_forward(-3000)
+    
+    left_speed = -Gamepad.get_value("joystick_left_y")
+    right_speed = -Gamepad.get_value("joystick_right_y")
+    if abs(left_speed) > 0.1:
+        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, left_speed)
+    else:
+        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, 0)
+    if abs(right_speed) > 0.1:
+        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, right_speed)
+    else:
+        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, 0)
+    
+    if Gamepad.get_value("button_a"):
+        while True:
+            if Gamepad.get_value("button_b"):
+                break
+            if Robot.get_value(LEADING_LINE_FOLLOWER_ID, LEADING_LINE_FOLLOWER_SENSORS["center"]) > ON_LINE_THRESHOLD:
+                Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, 0.15)
+                Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, 0.15)
+            if Robot.get_value(CENTER_LINE_FOLLOWER_ID, CENTER_LINE_FOLLOWER_SENSORS["center"]) > ON_LINE_THRESHOLD:
+                Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, 0)
+                Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, 0)
 
 
 def drive_forward(distance: int, speed=AUTONOMOUS_SPEED, tolerance=34) -> None:
