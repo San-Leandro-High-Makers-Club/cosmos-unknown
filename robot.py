@@ -109,15 +109,13 @@ def autonomous_main():
     pass
 
 
-def drive_forward(distance: int, speed=AUTONOMOUS_SPEED, tolerance=100, stop=True) -> None:
-    """Drive in a straight line for the specified distance, decelerating near the end
+def drive_forward(distance: int, speed=AUTONOMOUS_SPEED, tolerance=34) -> None:
+    """Drive in a straight line for the specified distance, then stop
 
     :param distance: the distance to drive (as an encoder value). If negative, drive in reverse.
     :param speed: the speed at which to primarily drive. If extremely low, simply return immediately.
     :param tolerance: the maximum distance (as an encoder value) by which it is acceptable to deviate from the specified
-        distance
-    :param stop: if True, come to rest after the specified distance has been travelled, and attempt adjustments if the
-        specified distance has been overshot
+        distance. Defaults to 34, which is about a 1 cm travel distance for the robot.
     :return: None
     """
 
@@ -130,36 +128,35 @@ def drive_forward(distance: int, speed=AUTONOMOUS_SPEED, tolerance=100, stop=Tru
     if distance < 0:
         speed *= -1
 
-    initial_left_motor_position: int = Robot.get_value(DRIVE_CONTROLLER_ID, "enc_" + L_DRIVE_MOTOR)
-    initial_right_motor_position: int = Robot.get_value(DRIVE_CONTROLLER_ID, "enc_" + R_DRIVE_MOTOR)
+    initial_left_motor_position: int = abs(Robot.get_value(DRIVE_CONTROLLER_ID, "enc_" + L_DRIVE_MOTOR))
+    initial_right_motor_position: int = abs(Robot.get_value(DRIVE_CONTROLLER_ID, "enc_" + R_DRIVE_MOTOR))
 
     def left_motor_distance_travelled():
-        return Robot.get_value(DRIVE_CONTROLLER_ID, "enc_" + L_DRIVE_MOTOR) - initial_left_motor_position
+        return abs(Robot.get_value(DRIVE_CONTROLLER_ID, "enc_" + L_DRIVE_MOTOR)) - initial_left_motor_position
 
     def right_motor_distance_travelled():
-        return Robot.get_value(DRIVE_CONTROLLER_ID, "enc_" + R_DRIVE_MOTOR) - initial_right_motor_position
+        return abs(Robot.get_value(DRIVE_CONTROLLER_ID, "enc_" + R_DRIVE_MOTOR)) - initial_right_motor_position
 
     def average_distance_travelled():
         return int((left_motor_distance_travelled() + right_motor_distance_travelled()) / 2)
 
-    while abs(distance - average_distance_travelled()) > 500:  # TODO: calibrate
+    while abs(distance) - average_distance_travelled() > 170:
         Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, speed)
         Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, speed)
 
     reduced_speed = 0.15
     if distance < 0:
         reduced_speed *= -1
-    while abs(distance - average_distance_travelled()) > tolerance:
+    while abs(distance) - average_distance_travelled() > tolerance:
         Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, reduced_speed)
         Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, reduced_speed)
 
-    if stop:
-        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, 0)
-        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, 0)
-        Robot.sleep(1)
-        if abs(distance - average_distance_travelled()) > tolerance:
-            adjustment_distance = -abs(distance - average_distance_travelled())
-            drive_forward(adjustment_distance, 0.5 * speed, tolerance, stop)
+    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, 0)
+    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, 0)
+
+    if abs(distance) + tolerance < average_distance_travelled():
+        adjustment_distance = average_distance_travelled() - distance
+        drive_forward(-adjustment_distance, 0.5 * speed, tolerance)
 
 
 def arm_control():
