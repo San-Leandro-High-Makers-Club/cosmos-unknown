@@ -77,7 +77,11 @@ ON_LINE_THRESHOLD = 0.18
 OFF_LINE_THRESHOLD = 0.12
 
 # The distance (as an encoder value) between the line follower sensors
+<<<<<<< HEAD
 LINE_FOLLOWER_SEPARATION: 377
+=======
+LINE_FOLLOWER_SEPARATION: 100  # TODO: calibrate 377
+>>>>>>> 52f7129 (commit for pull)
 
 # Preset arm encoder positions
 # The key is the gamepad button used to activate the preset; the value is the preset encoder position
