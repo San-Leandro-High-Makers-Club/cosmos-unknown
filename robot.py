@@ -144,7 +144,8 @@ def get_line_follower_values(line_follower: str) -> Dict[str, float]:
 
 
 def autonomous_main():
-    pass
+    leading_line_follower = get_line_follower_values("leading")
+    center_line_follower = get_line_follower_values("center")
 
 
 def drive_forward(distance: int, speed=AUTONOMOUS_SPEED, tolerance=34) -> None:
