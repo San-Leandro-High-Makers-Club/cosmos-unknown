@@ -76,8 +76,9 @@ ON_LINE_THRESHOLD = 0.18
 # The maximum line follower reading that is considered to be off the tape
 OFF_LINE_THRESHOLD = 0.12
 
-# The distance (as an encoder value) between the line follower sensors
-LINE_FOLLOWER_SEPARATION: 377
+# The distance (as an encoder value) between the line follower sensor at the front of the robot, and the one in the
+# center of the robot
+LINE_FOLLOWER_SEPARATION = 377
 
 # Preset arm encoder positions
 # The key is the gamepad button used to activate the preset; the value is the preset encoder position
@@ -143,9 +144,90 @@ def get_line_follower_values(line_follower: str) -> Dict[str, float]:
         return {}
 
 
+# Store an integer corresponding to the current stage of the autonomous period
+# 0: on the segment of tape within the starting zone
+# 1: on the segment of tape immediately outside the starting zone, angled towards the campsite
+# 2: on the segment of tape in front of the campsite and parallel to the front edge of the starting zone
+# 3: on the segment of tape angled towards the end zone
+# 4: on the segment of tape within the end zone
+# 5: completed the autonomous period in the end zone
+autonomous_stage = 0
+
+
 def autonomous_main():
-    leading_line_follower = get_line_follower_values("leading")
-    center_line_follower = get_line_follower_values("center")
+    global autonomous_stage
+
+    if autonomous_stage == 5:  # we're done :)
+        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, 0)
+        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, 0)
+        return
+
+    if get_line_follower_values("leading")["left"] >= ON_LINE_THRESHOLD:
+        # We're drifting to the right
+        # Rotate left until the leading line follower is above the line again
+        while get_line_follower_values("leading")["center"] <= ON_LINE_THRESHOLD:
+            Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, -0.1)
+            Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, 0.1)
+        return  # Continue autonomous driving
+    elif get_line_follower_values("leading")["right"] >= ON_LINE_THRESHOLD:
+        # We're drifting to the left
+        # Rotate right until the leading line follower is above the line again
+        while get_line_follower_values("leading")["center"] <= ON_LINE_THRESHOLD:
+            Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, 0.1)
+            Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, -0.1)
+        return  # Continue autonomous driving
+
+    if get_line_follower_values("leading")["center"] >= ON_LINE_THRESHOLD:
+        # Continue straight on the line
+        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, AUTONOMOUS_SPEED)
+        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, AUTONOMOUS_SPEED)
+    else:
+        # Proceed with caution
+        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, 0.5 * AUTONOMOUS_SPEED)
+        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, 0.5 * AUTONOMOUS_SPEED)
+
+    if get_line_follower_values("leading")["center"] <= OFF_LINE_THRESHOLD:
+        # See if we're almost done
+        if autonomous_stage == 4:
+            leading_sensors = get_line_follower_values("leading")
+            if leading_sensors["left"] <= OFF_LINE_THRESHOLD and leading_sensors["right"] <= OFF_LINE_THRESHOLD:
+                # This seems to be the end
+                drive_forward(LINE_FOLLOWER_SEPARATION)
+                autonomous_stage += 1
+                return
+
+        # We're not done :(
+        # See if this is a turn
+
+        # Only for the corner after tape segment 2 is the direction of the turn opposite that of Robot.start_pos.
+        # For instance, if start_pos is "left", after tape segment 2, we must turn right. After all other segments,
+        # we would need to turn left.
+        expected_turn_direction = Robot.start_pos
+        if autonomous_stage == 2:
+            if Robot.start_pos == "left":
+                expected_turn_direction = "right"
+            else:
+                expected_turn_direction = "left"
+
+        if get_line_follower_values("leading")[expected_turn_direction] >= ON_LINE_THRESHOLD:
+            # This seems to be the turn. Drive until the center line follower is positioned above the corner
+            drive_forward(LINE_FOLLOWER_SEPARATION)
+            if get_line_follower_values("center")["center"] <= OFF_LINE_THRESHOLD:  # we overshot
+                while get_line_follower_values("center")["center"] <= ON_LINE_THRESHOLD:
+                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, -0.1)
+                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, -0.1)
+
+            # Rotate until the leading line follower is above the line again
+            while get_line_follower_values("leading")["center"] <= ON_LINE_THRESHOLD:
+                if expected_turn_direction == "left":
+                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, -0.1)
+                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, 0.1)
+                else:
+                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, 0.1)
+                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, -0.1)
+
+            autonomous_stage += 1
+            return  # Continue autonomous driving
 
 
 def drive_forward(distance: int, speed=AUTONOMOUS_SPEED, tolerance=34) -> None:
