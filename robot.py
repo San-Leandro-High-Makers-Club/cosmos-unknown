@@ -132,12 +132,12 @@ def get_line_follower_values(line_follower: str) -> Dict[str, float]:
     if line_follower == "center":
         values = {}
         for sensor in list(CENTER_LINE_FOLLOWER_SENSORS):
-            values[sensor] = Robot.get_value(CENTER_LINE_FOLLOWER_ID, sensor)
+            values[sensor] = Robot.get_value(CENTER_LINE_FOLLOWER_ID, CENTER_LINE_FOLLOWER_SENSORS[sensor])
         return values
     elif line_follower == "leading":
         values = {}
         for sensor in list(LEADING_LINE_FOLLOWER_SENSORS):
-            values[sensor] = Robot.get_value(LEADING_LINE_FOLLOWER_ID, sensor)
+            values[sensor] = Robot.get_value(LEADING_LINE_FOLLOWER_ID, LEADING_LINE_FOLLOWER_SENSORS[sensor])
         return values
     else:
         return {}
