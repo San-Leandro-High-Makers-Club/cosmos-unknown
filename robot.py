@@ -70,11 +70,14 @@ ARM_SPEED = 1.0
 # Speed at which the robot should drive during autonomous mode
 AUTONOMOUS_SPEED = 0.8
 
+# Speed at which the robot should rotate during autonomous mode
+AUTONOMOUS_ROTATION_SPEED = 0.4
+
 # The minimum line follower reading that is considered to be on the tape
-ON_LINE_THRESHOLD = 0.18
+ON_LINE_THRESHOLD = 0.10
 
 # The maximum line follower reading that is considered to be off the tape
-OFF_LINE_THRESHOLD = 0.12
+OFF_LINE_THRESHOLD = 0.07
 
 # The distance (as an encoder value) between the line follower sensor at the front of the robot, and the one in the
 # center of the robot
@@ -166,15 +169,15 @@ def autonomous_main():
         # We're drifting to the right
         # Rotate left until the leading line follower is above the line again
         while get_line_follower_values("leading")["center"] <= ON_LINE_THRESHOLD:
-            Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, -0.1)
-            Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, 0.1)
+            Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, -AUTONOMOUS_ROTATION_SPEED)
+            Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, AUTONOMOUS_ROTATION_SPEED)
         return  # Continue autonomous driving
     elif get_line_follower_values("leading")["right"] >= ON_LINE_THRESHOLD:
         # We're drifting to the left
         # Rotate right until the leading line follower is above the line again
         while get_line_follower_values("leading")["center"] <= ON_LINE_THRESHOLD:
-            Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, 0.1)
-            Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, -0.1)
+            Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, AUTONOMOUS_ROTATION_SPEED)
+            Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, -AUTONOMOUS_ROTATION_SPEED)
         return  # Continue autonomous driving
 
     if get_line_follower_values("leading")["center"] >= ON_LINE_THRESHOLD:
@@ -214,17 +217,17 @@ def autonomous_main():
             drive_forward(LINE_FOLLOWER_SEPARATION)
             if get_line_follower_values("center")["center"] <= OFF_LINE_THRESHOLD:  # we overshot
                 while get_line_follower_values("center")["center"] <= ON_LINE_THRESHOLD:
-                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, -0.1)
-                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, -0.1)
+                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, -0.15)
+                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, -0.15)
 
             # Rotate until the leading line follower is above the line again
             while get_line_follower_values("leading")["center"] <= ON_LINE_THRESHOLD:
                 if expected_turn_direction == "left":
-                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, -0.1)
-                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, 0.1)
+                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, -AUTONOMOUS_ROTATION_SPEED)
+                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, AUTONOMOUS_ROTATION_SPEED)
                 else:
-                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, 0.1)
-                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, -0.1)
+                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, AUTONOMOUS_ROTATION_SPEED)
+                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, -AUTONOMOUS_ROTATION_SPEED)
 
             autonomous_stage += 1
             return  # Continue autonomous driving
