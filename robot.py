@@ -70,6 +70,9 @@ ARM_SPEED = 1.0
 # Speed at which the robot should drive during autonomous mode
 AUTONOMOUS_SPEED = 0.8
 
+# Speed at which the robot should drive during autonomous mode when precision is needed
+REDUCED_AUTONOMOUS_SPEED = 0.15
+
 # Speed at which the robot should rotate during autonomous mode
 AUTONOMOUS_ROTATION_SPEED = 0.4
 
@@ -186,8 +189,8 @@ def autonomous_main():
         Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, AUTONOMOUS_SPEED)
     else:
         # Proceed with caution
-        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, 0.5 * AUTONOMOUS_SPEED)
-        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, 0.5 * AUTONOMOUS_SPEED)
+        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, REDUCED_AUTONOMOUS_SPEED)
+        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, REDUCED_AUTONOMOUS_SPEED)
 
     if get_line_follower_values("leading")["center"] <= OFF_LINE_THRESHOLD:
         # See if we're almost done
@@ -217,8 +220,8 @@ def autonomous_main():
             drive_forward(LINE_FOLLOWER_SEPARATION)
             if get_line_follower_values("center")["center"] <= OFF_LINE_THRESHOLD:  # we overshot
                 while get_line_follower_values("center")["center"] <= ON_LINE_THRESHOLD:
-                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, -0.15)
-                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, -0.15)
+                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, -REDUCED_AUTONOMOUS_SPEED)
+                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, -REDUCED_AUTONOMOUS_SPEED)
 
             # Rotate until the leading line follower is above the line again
             while get_line_follower_values("leading")["center"] <= ON_LINE_THRESHOLD:
@@ -268,7 +271,7 @@ def drive_forward(distance: int, speed=AUTONOMOUS_SPEED, tolerance=34) -> None:
         Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, speed)
         Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, speed)
 
-    reduced_speed = 0.15
+    reduced_speed = REDUCED_AUTONOMOUS_SPEED
     if distance < 0:
         reduced_speed *= -1
     while abs(distance) - average_distance_travelled() > tolerance:
