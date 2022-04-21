@@ -82,7 +82,7 @@ ON_LINE_THRESHOLD = 0.10
 # The maximum line follower reading that is considered to be off the tape
 OFF_LINE_THRESHOLD = 0.07
 
-# The distance (as an encoder value) between the line follower sensor at the front of the robot, and the one in the
+# The distance (as an encoder value) between the line follower at the front of the robot, and the one in the
 # center of the robot
 LINE_FOLLOWER_SEPARATION = 377
 
@@ -286,6 +286,7 @@ def drive_forward(distance: int, speed=AUTONOMOUS_SPEED, tolerance=34) -> None:
         drive_forward(-adjustment_distance, 0.5 * speed, tolerance)
 
 
+# Control the arm based on driver and sensor input
 def arm_control():
     while True:
         bottom_switch_pressed: bool = Robot.get_value(LIMIT_SWITCH_ID, BOTTOM_LIMIT_SWITCH)
@@ -354,6 +355,7 @@ def teleop_setup():
     Robot.set_value(ARM_CONTROLLER_ID, "pid_enabled_" + PINCER_MOTOR, False)
     Robot.set_value(ARM_CONTROLLER_ID, "pid_enabled_" + ARM_MOTOR, False)
 
+    # Start arm control
     Robot.run(arm_control)
 
 
