@@ -68,7 +68,7 @@ INVERT_ARM_MOTOR = False
 ARM_SPEED = 1.0
 
 # Speed at which the robot should drive during autonomous mode
-AUTONOMOUS_SPEED = 0.8
+AUTONOMOUS_SPEED = 0.3
 
 # Speed at which the robot should drive during autonomous mode when precision is needed
 REDUCED_AUTONOMOUS_SPEED = 0.15
