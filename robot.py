@@ -82,9 +82,14 @@ ON_LINE_THRESHOLD = 0.10
 # The maximum line follower reading that is considered to be off the tape
 OFF_LINE_THRESHOLD = 0.07
 
-# The distance (as an encoder value) between the line follower at the front of the robot, and the one in the
-# center of the robot
-LINE_FOLLOWER_SEPARATION = 377
+# The distance (as an encoder value) the drive motors much each turn (in opposite directions) to rotate the robot by 90
+# degrees
+QUARTER_TURN_ARC_LENGTH = 50
+
+# The minimum angle (in degrees) through which the robot must turn before the turn is considered "significant", that is,
+# a result of a change in the line follower tape direction. Turns through an angle that is less than this value are
+# assumed to be minor, corrective adjustments along a single, straight segment of tape.
+SIGNIFICANT_TURN_ANGLE = 10
 
 # Preset arm encoder positions
 # The key is the gamepad button used to activate the preset; the value is the preset encoder position
@@ -170,18 +175,28 @@ def autonomous_main():
 
     if get_line_follower_values("leading")["left"] > get_line_follower_values("leading")["center"] >= ON_LINE_THRESHOLD:
         # We're drifting to the right
-        # Rotate left until the leading line follower is above the line again
+        # Rotate left until the leading line follower is above the line again, keeping track of how far we turn
+        initial_encoder_position = Robot.get_value(DRIVE_CONTROLLER_ID, "enc_" + R_DRIVE_MOTOR)
         while get_line_follower_values("leading")["left"] >= get_line_follower_values("leading")["center"]:
             Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, -AUTONOMOUS_ROTATION_SPEED)
             Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, AUTONOMOUS_ROTATION_SPEED)
+        theta = abs(Robot.get_value(DRIVE_CONTROLLER_ID, "enc_" + R_DRIVE_MOTOR) - initial_encoder_position) / (
+                QUARTER_TURN_ARC_LENGTH / 90)
+        if theta >= SIGNIFICANT_TURN_ANGLE:
+            autonomous_stage += 1
         return  # Continue autonomous driving
     elif get_line_follower_values("leading")["right"] > get_line_follower_values("leading")["center"] >= \
             ON_LINE_THRESHOLD:
         # We're drifting to the left
-        # Rotate right until the leading line follower is above the line again
+        # Rotate right until the leading line follower is above the line again, keeping track of how far we turn
+        initial_encoder_position = Robot.get_value(DRIVE_CONTROLLER_ID, "enc_" + L_DRIVE_MOTOR)
         while get_line_follower_values("leading")["right"] >= get_line_follower_values("leading")["center"]:
             Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, AUTONOMOUS_ROTATION_SPEED)
             Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, -AUTONOMOUS_ROTATION_SPEED)
+        theta = abs(Robot.get_value(DRIVE_CONTROLLER_ID, "enc_" + L_DRIVE_MOTOR) - initial_encoder_position) / (
+                QUARTER_TURN_ARC_LENGTH / 90)
+        if theta >= SIGNIFICANT_TURN_ANGLE:
+            autonomous_stage += 1
         return  # Continue autonomous driving
 
     if get_line_follower_values("leading")["center"] >= ON_LINE_THRESHOLD:
@@ -199,92 +214,13 @@ def autonomous_main():
             leading_sensors = get_line_follower_values("leading")
             if leading_sensors["left"] <= OFF_LINE_THRESHOLD and leading_sensors["right"] <= OFF_LINE_THRESHOLD:
                 # This seems to be the end
-                drive_forward(LINE_FOLLOWER_SEPARATION)
+                while get_line_follower_values("center")["center"] >= ON_LINE_THRESHOLD:
+                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, REDUCED_AUTONOMOUS_SPEED)
+                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, REDUCED_AUTONOMOUS_SPEED)
+                Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, 0)
+                Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, 0)
                 autonomous_stage += 1
                 return
-
-        # We're not done :(
-        # See if this is a turn
-
-        # Only for the corner after tape segment 2 is the direction of the turn opposite that of Robot.start_pos.
-        # For instance, if start_pos is "left", after tape segment 2, we must turn right. After all other segments,
-        # we would need to turn left.
-        expected_turn_direction = Robot.start_pos
-        if autonomous_stage == 2:
-            if Robot.start_pos == "left":
-                expected_turn_direction = "right"
-            else:
-                expected_turn_direction = "left"
-
-        if get_line_follower_values("leading")[expected_turn_direction] >= ON_LINE_THRESHOLD:
-            # This seems to be the turn. Drive until the center line follower is positioned above the corner
-            drive_forward(LINE_FOLLOWER_SEPARATION)
-            if get_line_follower_values("center")["center"] <= OFF_LINE_THRESHOLD:  # we overshot
-                while get_line_follower_values("center")["center"] <= ON_LINE_THRESHOLD:
-                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, -REDUCED_AUTONOMOUS_SPEED)
-                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, -REDUCED_AUTONOMOUS_SPEED)
-
-            # Rotate until the leading line follower is above the line again
-            while get_line_follower_values("leading")["center"] <= ON_LINE_THRESHOLD:
-                if expected_turn_direction == "left":
-                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, -AUTONOMOUS_ROTATION_SPEED)
-                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, AUTONOMOUS_ROTATION_SPEED)
-                else:
-                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, AUTONOMOUS_ROTATION_SPEED)
-                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, -AUTONOMOUS_ROTATION_SPEED)
-
-            autonomous_stage += 1
-            return  # Continue autonomous driving
-
-
-def drive_forward(distance: int, speed=AUTONOMOUS_SPEED, tolerance=34) -> None:
-    """Drive in a straight line for the specified distance, then stop
-
-    :param distance: the distance to drive (as an encoder value). If negative, drive in reverse.
-    :param speed: the speed at which to primarily drive. If extremely low, simply return immediately.
-    :param tolerance: the maximum distance (as an encoder value) by which it is acceptable to deviate from the specified
-        distance. Defaults to 34, which is about a 1 cm travel distance for the robot.
-    :return: None
-    """
-
-    speed = abs(speed)
-    if speed < 0.1:
-        return
-    tolerance = abs(tolerance)
-    if tolerance > abs(distance):
-        return
-    if distance < 0:
-        speed *= -1
-
-    initial_left_motor_position: int = abs(Robot.get_value(DRIVE_CONTROLLER_ID, "enc_" + L_DRIVE_MOTOR))
-    initial_right_motor_position: int = abs(Robot.get_value(DRIVE_CONTROLLER_ID, "enc_" + R_DRIVE_MOTOR))
-
-    def left_motor_distance_travelled():
-        return abs(Robot.get_value(DRIVE_CONTROLLER_ID, "enc_" + L_DRIVE_MOTOR)) - initial_left_motor_position
-
-    def right_motor_distance_travelled():
-        return abs(Robot.get_value(DRIVE_CONTROLLER_ID, "enc_" + R_DRIVE_MOTOR)) - initial_right_motor_position
-
-    def average_distance_travelled():
-        return int((left_motor_distance_travelled() + right_motor_distance_travelled()) / 2)
-
-    while abs(distance) - average_distance_travelled() > 170:
-        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, speed)
-        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, speed)
-
-    reduced_speed = REDUCED_AUTONOMOUS_SPEED
-    if distance < 0:
-        reduced_speed *= -1
-    while abs(distance) - average_distance_travelled() > tolerance:
-        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, reduced_speed)
-        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, reduced_speed)
-
-    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, 0)
-    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, 0)
-
-    if abs(distance) + tolerance < average_distance_travelled():
-        adjustment_distance = average_distance_travelled() - distance
-        drive_forward(-adjustment_distance, 0.5 * speed, tolerance)
 
 
 # Control the arm based on driver and sensor input
