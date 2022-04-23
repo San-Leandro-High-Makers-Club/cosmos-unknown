@@ -91,7 +91,7 @@ OFF_LINE_THRESHOLD = 0.07
 
 # The distance (as an encoder value) the drive motors much each turn (in opposite directions) to rotate the robot by 90
 # degrees
-QUARTER_TURN_ARC_LENGTH = 50
+QUARTER_TURN_ARC_LENGTH = 1065
 
 # The minimum angle (in degrees) through which the robot must turn before the turn is considered "significant", that is,
 # a result of a change in the line follower tape direction. Turns through an angle that is less than this value are
@@ -99,7 +99,7 @@ QUARTER_TURN_ARC_LENGTH = 50
 SIGNIFICANT_TURN_ANGLE = 10
 
 # Range of arm positions (as encoder values) where the motor must be powered to cancel the gravitational torque
-ARM_GRAVITY_RANGE = (-500, -200)
+ARM_GRAVITY_RANGE = (-1330, -700)
 
 # The velocity at which the arm motor must be powered when inside the ARM_GRAVITY_RANGE to maintain its position
 ARM_GRAVITY_POWER = 0.2
@@ -108,7 +108,7 @@ ARM_GRAVITY_POWER = 0.2
 # The key is the gamepad button used to activate the preset; the value is the preset encoder position
 ARM_POSITIONS = {
     "button_a": 0,  # highest position
-    "button_b": -500  # lowest position
+    "button_b": -1330  # lowest position
 }
 
 # Maximum acceptable deviation (as an encoder value) from the arm position when using a preset
