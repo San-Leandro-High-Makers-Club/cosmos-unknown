@@ -322,11 +322,14 @@ def lifeguard_shift(shifts_required: Set[int], lifeguards: List[Tuple[int, int]]
             return abs(current_lifeguard[1] - current_lifeguard[0])
         return math.inf  # there is no way to cover all the shifts
 
-    # The minimum cost possible if we don't hire current_lifeguard
-    skipping_cost = lifeguard_shift(shifts_required, reduced_lifeguards)
-
     # The minimum cost possible if we hire current_lifeguard
     hiring_cost = abs(current_lifeguard[1] - current_lifeguard[0]) + lifeguard_shift(reduced_shifts, reduced_lifeguards)
+
+    if hiring_cost == math.inf:
+        return math.inf  # don't bother checking what happens if we skip
+
+    # The minimum cost possible if we don't hire current_lifeguard
+    skipping_cost = lifeguard_shift(shifts_required, reduced_lifeguards)
 
     return min(skipping_cost, hiring_cost)
 
