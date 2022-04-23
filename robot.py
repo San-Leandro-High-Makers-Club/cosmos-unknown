@@ -69,7 +69,7 @@ INVERT_PINCER_MOTOR = False
 INVERT_ARM_MOTOR = False
 
 # Speed at which the arms should raise and lower
-ARM_SPEED = 1.0
+ARM_SPEED = 0.7
 
 # Speed at which the pincer should open and close
 PINCER_SPEED = 0.4
