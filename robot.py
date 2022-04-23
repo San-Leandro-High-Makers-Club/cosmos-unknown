@@ -98,6 +98,12 @@ QUARTER_TURN_ARC_LENGTH = 50
 # assumed to be minor, corrective adjustments along a single, straight segment of tape.
 SIGNIFICANT_TURN_ANGLE = 10
 
+# Range of arm positions (as encoder values) where the motor must be powered to cancel the gravitational torque
+ARM_GRAVITY_RANGE = (-500, -200)
+
+# The velocity at which the arm motor must be powered when inside the ARM_GRAVITY_RANGE to maintain its position
+ARM_GRAVITY_POWER = 0.2
+
 # Preset arm encoder positions
 # The key is the gamepad button used to activate the preset; the value is the preset encoder position
 ARM_POSITIONS = {
@@ -267,7 +273,11 @@ def arm_control():
             elif move_arm_down:
                 Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, -ARM_SPEED)
             else:
-                Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
+                encoder_value = Robot.get_value(ARM_CONTROLLER_ID, "enc_" + ARM_MOTOR)
+                if ARM_GRAVITY_RANGE[0] < encoder_value < ARM_GRAVITY_RANGE[1]:
+                    Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, ARM_GRAVITY_POWER)
+                else:
+                    Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
 
         else:
             encoder_value = Robot.get_value(ARM_CONTROLLER_ID, "enc_" + ARM_MOTOR)
