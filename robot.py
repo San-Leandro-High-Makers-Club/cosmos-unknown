@@ -259,12 +259,10 @@ def arm_control():
                 move_arm_down = False
 
             if top_switch_pressed:
-                Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
                 Robot.set_value(ARM_CONTROLLER_ID, "enc_" + ARM_MOTOR, max(ARM_POSITIONS.values()))
                 move_arm_up = False
 
             if bottom_switch_pressed:
-                Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
                 Robot.set_value(ARM_CONTROLLER_ID, "enc_" + ARM_MOTOR, min(ARM_POSITIONS.values()))
                 move_arm_down = False
 
