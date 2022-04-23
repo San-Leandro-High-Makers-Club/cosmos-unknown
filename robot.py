@@ -59,8 +59,8 @@ L_DRIVE_MOTOR = 'a'
 R_DRIVE_MOTOR = 'b'
 
 # Which arm motor (a or b) is attached to the base of each arm
-PINCER_MOTOR = 'b'
-ARM_MOTOR = 'a'
+PINCER_MOTOR = 'a'
+ARM_MOTOR = 'b'
 
 # Whether the direction of the motors should be inverted
 INVERT_L_DRIVE_MOTOR = True
@@ -102,7 +102,7 @@ SIGNIFICANT_TURN_ANGLE = 10
 ARM_GRAVITY_RANGE = (-1330, -700)
 
 # The velocity at which the arm motor must be powered when inside the ARM_GRAVITY_RANGE to maintain its position
-ARM_GRAVITY_POWER = 0.2
+ARM_GRAVITY_POWER = 0.4
 
 # Preset arm encoder positions
 # The key is the gamepad button used to activate the preset; the value is the preset encoder position
