@@ -50,6 +50,10 @@ def target_right_drive_motor_velocity():
 ARM_UP_BUTTON = "l_bumper"
 ARM_DOWN_BUTTON = "l_trigger"
 
+# Buttons used to operate the pincer
+PINCER_OPEN_BUTTON = "r_bumper"
+PINCER_CLOSE_BUTTON = "r_trigger"
+
 # Which drive motor (a or b) is attached to the right and left wheels
 L_DRIVE_MOTOR = 'a'
 R_DRIVE_MOTOR = 'b'
@@ -66,6 +70,9 @@ INVERT_ARM_MOTOR = False
 
 # Speed at which the arms should raise and lower
 ARM_SPEED = 1.0
+
+# Speed at which the pincer should open and close
+PINCER_SPEED = 0.4
 
 # Speed at which the robot should drive during autonomous mode
 AUTONOMOUS_SPEED = 0.3
@@ -277,6 +284,20 @@ def arm_control():
                 encoder_value = Robot.get_value(ARM_CONTROLLER_ID, "enc_" + ARM_MOTOR)
 
             Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
+        
+        open_pincer: bool = Gamepad.get_value(PINCER_OPEN_BUTTON)
+        close_pincer: bool = Gamepad.get_value(PINCER_CLOSE_BUTTON)
+        
+        if open_pincer and close_pincer:
+            open_pincer = False
+            close_pincer = False
+        
+        if open_pincer:
+            Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + PINCER_MOTOR, PINCER_SPEED)
+        elif close_pincer:
+            Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + PINCER_MOTOR, -PINCER_SPEED)
+        else:
+            Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + PINCER_MOTOR, 0)
 
 
 def teleop_setup():
