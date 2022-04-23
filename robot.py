@@ -102,7 +102,7 @@ SIGNIFICANT_TURN_ANGLE = 10
 ARM_GRAVITY_RANGE = (-1330, -700)
 
 # The velocity at which the arm motor must be powered when inside the ARM_GRAVITY_RANGE to maintain its position
-ARM_GRAVITY_POWER = 0.4
+ARM_GRAVITY_POWER = 0.2
 
 # Preset arm encoder positions
 # The key is the gamepad button used to activate the preset; the value is the preset encoder position
