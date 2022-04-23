@@ -334,10 +334,11 @@ def lifeguard_shift(shifts_required: Set[int], lifeguards: List[Tuple[int, int]]
     # covered by another lifeguard)
     unique_shift = current_shift.difference(overlapping_shift)
 
-    if min(unique_shift) < lifeguards[1][0]:
-        # current_lifeguard covers a shift that nobody else can cover
-        # we therefore must hire them
-        return hiring_cost
+    if len(unique_shift) > 0:
+        if min(unique_shift) < lifeguards[1][0]:
+            # current_lifeguard covers a shift that nobody else can cover
+            # we therefore must hire them
+            return hiring_cost
 
     # The minimum cost possible if we don't hire current_lifeguard
     skipping_cost = lifeguard_shift(shifts_required, reduced_lifeguards)
