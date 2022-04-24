@@ -65,11 +65,11 @@ ARM_MOTOR = 'b'
 # Whether the direction of the motors should be inverted
 INVERT_L_DRIVE_MOTOR = True
 INVERT_R_DRIVE_MOTOR = False
-INVERT_PINCER_MOTOR = False
+INVERT_PINCER_MOTOR = True
 INVERT_ARM_MOTOR = False
 
 # Speed at which the arms should raise and lower
-ARM_SPEED = 0.7
+ARM_SPEED = 0.5
 
 # Speed at which the pincer should open and close
 PINCER_SPEED = 0.4
@@ -292,14 +292,14 @@ def arm_control():
                 encoder_value = Robot.get_value(ARM_CONTROLLER_ID, "enc_" + ARM_MOTOR)
 
             Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
-        
+
         open_pincer: bool = Gamepad.get_value(PINCER_OPEN_BUTTON)
         close_pincer: bool = Gamepad.get_value(PINCER_CLOSE_BUTTON)
-        
+
         if open_pincer and close_pincer:
             open_pincer = False
             close_pincer = False
-        
+
         if open_pincer:
             Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + PINCER_MOTOR, PINCER_SPEED)
         elif close_pincer:
