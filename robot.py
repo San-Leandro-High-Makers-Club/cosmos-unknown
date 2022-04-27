@@ -93,10 +93,8 @@ OFF_LINE_THRESHOLD = 0.07
 # degrees
 QUARTER_TURN_ARC_LENGTH = 1065
 
-# The minimum angle (in degrees) through which the robot must turn before the turn is considered "significant", that is,
-# a result of a change in the line follower tape direction. Turns through an angle that is less than this value are
-# assumed to be minor, corrective adjustments along a single, straight segment of tape.
-SIGNIFICANT_TURN_ANGLE = 10
+# The maximum error (in degrees) to anticipate in autonomous_heading
+HEADING_TOLERANCE = 10
 
 # Range of arm positions (as encoder values) where the motor must be powered to cancel the gravitational torque
 ARM_GRAVITY_RANGE = (-1330, -700)
@@ -168,20 +166,22 @@ def get_line_follower_values(line_follower: str) -> Dict[str, float]:
         return {}
 
 
-# Store an integer corresponding to the current stage of the autonomous period
-# 0: on the segment of tape within the starting zone
-# 1: on the segment of tape immediately outside the starting zone, angled towards the campsite
-# 2: on the segment of tape in front of the campsite and parallel to the front edge of the starting zone
-# 3: on the segment of tape angled towards the end zone
-# 4: on the segment of tape within the end zone
-# 5: completed the autonomous period in the end zone
-autonomous_stage = 0
+# Store the current robot orientation (in degrees) relative to the starting zone during the autonomous period.
+# Positive values are counterclockwise.
+autonomous_heading = 0.0
+
+# Store whether the robot has progressed beyond the third tape segment (in front of the campsite, parallel to the
+# midline) during the autonomous period
+completed_third_tape_segment = False
+
+# Store whether the robot has reached the end zone during the autonomous period
+completed_autonomous = False
 
 
 def autonomous_main():
-    global autonomous_stage
+    global autonomous_heading, completed_third_tape_segment, completed_autonomous
 
-    if autonomous_stage == 5:  # we're done :)
+    if completed_autonomous:  # we're done :)
         Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, 0)
         Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, 0)
         return
@@ -195,8 +195,11 @@ def autonomous_main():
             Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, AUTONOMOUS_ROTATION_SPEED)
         theta = abs(Robot.get_value(DRIVE_CONTROLLER_ID, "enc_" + R_DRIVE_MOTOR) - initial_encoder_position) / (
                 QUARTER_TURN_ARC_LENGTH / 90)
-        if theta >= SIGNIFICANT_TURN_ANGLE:
-            autonomous_stage += 1
+        # See if we've reached the end of the third tape segment
+        if not completed_third_tape_segment:
+            if abs(90 - abs(autonomous_heading)) < HEADING_TOLERANCE < abs(90 - abs(autonomous_heading + theta)):
+                completed_third_tape_segment = True
+        autonomous_heading += theta
         return  # Continue autonomous driving
     elif get_line_follower_values("leading")["right"] > get_line_follower_values("leading")["center"] >= \
             ON_LINE_THRESHOLD:
@@ -208,8 +211,11 @@ def autonomous_main():
             Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, -AUTONOMOUS_ROTATION_SPEED)
         theta = abs(Robot.get_value(DRIVE_CONTROLLER_ID, "enc_" + L_DRIVE_MOTOR) - initial_encoder_position) / (
                 QUARTER_TURN_ARC_LENGTH / 90)
-        if theta >= SIGNIFICANT_TURN_ANGLE:
-            autonomous_stage += 1
+        # See if we've reached the end of the third tape segment
+        if not completed_third_tape_segment:
+            if abs(90 - abs(autonomous_heading)) < HEADING_TOLERANCE < abs(90 - abs(autonomous_heading - theta)):
+                completed_third_tape_segment = True
+        autonomous_heading -= theta
         return  # Continue autonomous driving
 
     if get_line_follower_values("leading")["center"] >= ON_LINE_THRESHOLD:
@@ -222,8 +228,8 @@ def autonomous_main():
         Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, REDUCED_AUTONOMOUS_SPEED)
 
     if get_line_follower_values("leading")["center"] <= OFF_LINE_THRESHOLD:
-        # See if we're almost done
-        if autonomous_stage == 4:
+        # See if we're almost done (on the line following tape inside the end zone)
+        if completed_third_tape_segment and abs(90 - abs(autonomous_heading)) < HEADING_TOLERANCE:
             leading_sensors = get_line_follower_values("leading")
             if leading_sensors["left"] <= OFF_LINE_THRESHOLD and leading_sensors["right"] <= OFF_LINE_THRESHOLD:
                 # This seems to be the end
@@ -232,7 +238,7 @@ def autonomous_main():
                     Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, REDUCED_AUTONOMOUS_SPEED)
                 Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, 0)
                 Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, 0)
-                autonomous_stage += 1
+                completed_autonomous = True
                 return
 
 
