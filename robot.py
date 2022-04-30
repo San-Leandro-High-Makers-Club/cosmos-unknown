@@ -106,7 +106,7 @@ ARM_GRAVITY_POWER = 0.2
 # The key is the gamepad button used to activate the preset; the value is the preset encoder position
 ARM_POSITIONS = {
     "button_a": 0,  # highest position
-    "button_b": -1330  # lowest position
+    "button_b": -130  # lowest position
 }
 
 # Maximum acceptable deviation (as an encoder value) from the arm position when using a preset
@@ -290,6 +290,7 @@ def arm_control():
                     if Robot.get_value(LIMIT_SWITCH_ID, TOP_LIMIT_SWITCH):
                         break
                     Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, ARM_SPEED)
+                    
                 elif encoder_value > ARM_POSITIONS[desired_preset]:
                     if Robot.get_value(LIMIT_SWITCH_ID, BOTTOM_LIMIT_SWITCH):
                         break
