@@ -294,7 +294,7 @@ def arm_control():
                 elif encoder_value > ARM_POSITIONS[desired_preset]:
                     if Robot.get_value(LIMIT_SWITCH_ID, BOTTOM_LIMIT_SWITCH):
                         break
-                    Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, -ARM_SPEED)
+                    Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, -0.5 * ARM_SPEED)
                 encoder_value = Robot.get_value(ARM_CONTROLLER_ID, "enc_" + ARM_MOTOR)
 
             Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
