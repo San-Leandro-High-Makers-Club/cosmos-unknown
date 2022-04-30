@@ -105,10 +105,14 @@ ARM_GRAVITY_POWER = 0.2
 # Preset arm encoder positions
 # The key is the gamepad button used to activate the preset; the value is the preset encoder position
 ARM_POSITIONS = {
-    "button_a": 0,  # highest position
-    "button_b": -1250  # lowest position
+    "bdpad_up": 0,  # highest position
+    "dpad_down": -1250,  # lowest position
+    "button_a": -700, # Top shelf
+    "button_b": -1165, # wheel
+    "button_x": -775  # Refinery
 }
 
+# height of ship 22.5 inch
 # Maximum acceptable deviation (as an encoder value) from the arm position when using a preset
 ARM_POSITION_TOLERANCE = 8
 
@@ -287,14 +291,14 @@ def arm_control():
             encoder_value = Robot.get_value(ARM_CONTROLLER_ID, "enc_" + ARM_MOTOR)
             while abs(encoder_value - ARM_POSITIONS[desired_preset]) > ARM_POSITION_TOLERANCE:
                 if encoder_value < ARM_POSITIONS[desired_preset]:
-                    if Robot.get_value(LIMIT_SWITCH_ID, TOP_LIMIT_SWITCH) or Gamepad.get_value(ARM_DOWN_BUTTON):
+                    if Robot.get_value(LIMIT_SWITCH_ID, TOP_LIMIT_SWITCH):
                         break
                     if ARM_GRAVITY_RANGE[1] < encoder_value:
                         Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0.5 * ARM_SPEED)
                     else:
                         Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, ARM_SPEED)
                 elif encoder_value > ARM_POSITIONS[desired_preset]:
-                    if Robot.get_value(LIMIT_SWITCH_ID, BOTTOM_LIMIT_SWITCH) or Gamepad.get_value(ARM_UP_BUTTON):
+                    if Robot.get_value(LIMIT_SWITCH_ID, BOTTOM_LIMIT_SWITCH):
                         break
                     if ARM_GRAVITY_RANGE[0] < encoder_value < ARM_GRAVITY_RANGE[1]:
                         Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
