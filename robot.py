@@ -97,7 +97,7 @@ QUARTER_TURN_ARC_LENGTH = 1065
 HEADING_TOLERANCE = 10
 
 # Range of arm positions (as encoder values) where the motor must be powered to cancel the gravitational torque
-ARM_GRAVITY_RANGE = (-1330, -700)
+ARM_GRAVITY_RANGE = (-1500, -700)
 
 # The velocity at which the arm motor must be powered when inside the ARM_GRAVITY_RANGE to maintain its position
 ARM_GRAVITY_POWER = 0.2
