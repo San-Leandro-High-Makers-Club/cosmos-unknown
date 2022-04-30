@@ -105,11 +105,11 @@ ARM_GRAVITY_POWER = 0.2
 # Preset arm encoder positions
 # The key is the gamepad button used to activate the preset; the value is the preset encoder position
 ARM_POSITIONS = {
-    "bdpad_up": 0,  # highest position
+    "dpad_up": 0,  # highest position
     "dpad_down": -1250,  # lowest position
-    "button_a": -700, # Top shelf
-    "button_b": -1165, # wheel
-    "button_x": -775  # Refinery
+    "button_a": -700,  # command room
+    "button_b": -1165,  # satellite dish
+    "button_x": -775  # refinery
 }
 
 # height of ship 22.5 inch
