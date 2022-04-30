@@ -293,7 +293,7 @@ def arm_control():
                     if Robot.get_value(LIMIT_SWITCH_ID, TOP_LIMIT_SWITCH) or Gamepad.get_value(ARM_DOWN_BUTTON):
                         break
                     if ARM_GRAVITY_RANGE[1] < encoder_value:
-                        Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0.5 * ARM_SPEED)
+                        Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0.75 * ARM_SPEED)
                     else:
                         Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, ARM_SPEED)
                 elif encoder_value > ARM_POSITIONS[desired_preset]:
@@ -302,7 +302,7 @@ def arm_control():
                     if ARM_GRAVITY_RANGE[0] < encoder_value < ARM_GRAVITY_RANGE[1]:
                         Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
                     else:
-                        Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, -ARM_SPEED)
+                        Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, -0.75 * ARM_SPEED)
                 encoder_value = Robot.get_value(ARM_CONTROLLER_ID, "enc_" + ARM_MOTOR)
 
             Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
