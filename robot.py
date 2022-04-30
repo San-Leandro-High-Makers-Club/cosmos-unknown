@@ -105,8 +105,8 @@ ARM_GRAVITY_POWER = 0.2
 # Preset arm encoder positions
 # The key is the gamepad button used to activate the preset; the value is the preset encoder position
 ARM_POSITIONS = {
-    "button_a": 0,  # highest position
-    "button_b": -1250  # lowest position
+    "button_a": -250,  # highest position before gravity takees effect
+    "button_b": -325  # lowest position
 }
 
 # Maximum acceptable deviation (as an encoder value) from the arm position when using a preset
