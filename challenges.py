@@ -3,10 +3,11 @@
 # Level 1 (2 pts each)               #
 #                                    #
 ######################################
+import copy
 import fractions
 import math
 import string
-from typing import List, Dict
+from typing import List, Dict, Tuple, Set, Union
 
 
 def is_pal(word):
@@ -274,7 +275,7 @@ def max_tastiness(ice_creams):
     pass
 
 
-def lifeguard_budget(intervals):
+def lifeguard_budget(intervals: List[Tuple[int, int]]) -> int:
     """
     >>> lifeguard_budget([(0,1000),(0,500),(500,1440)])
     1440
@@ -285,7 +286,64 @@ def lifeguard_budget(intervals):
     >>> lifeguard_budget([(a*6-10,a*6-2) for a in range(400)][::-1])
     1928
     """
-    pass
+    intervals.sort(key=lambda interval: interval[0])
+    return lifeguard_shift({i for i in range(0, 1440)}, intervals)
+
+
+def lifeguard_shift(shifts_required: Set[int], lifeguards: List[Tuple[int, int]]) -> Union[int, float]:
+    """Return the minimum cost of hiring lifeguards to cover all the shifts
+
+    :param shifts_required: a set of times (minutes) which must be covered by lifeguards
+    :param lifeguards: a list of the time intervals for which each respective lifeguard is available, in ascending order
+        by start time
+    :return: the minimum cost of hiring lifeguards from the lifeguards list, in order to fully cover the shifts
+    """
+
+    reduced_lifeguards = copy.deepcopy(lifeguards)
+    current_lifeguard = reduced_lifeguards.pop(0)
+
+    if len(shifts_required) == 0:
+        # shifts are already fully covered
+        return 0
+    else:
+        if min(shifts_required) < current_lifeguard[0]:
+            # lifeguards will only have progressively later start times from here on out
+            # we can't cover this first part of the shift
+            return math.inf
+
+    # The full shift covered by current_lifeguard
+    current_shift = {i for i in range(current_lifeguard[0], current_lifeguard[1])}
+    # The remaining shifts to be covered assuming we have hired current_lifeguard
+    reduced_shifts = shifts_required.difference(current_shift)
+
+    if len(lifeguards) == 1:  # current_lifeguard is the only lifeguard remaining
+        if len(reduced_shifts) == 0:
+            # we can cover all shifts by hiring current_lifeguard
+            return abs(current_lifeguard[1] - current_lifeguard[0])
+        return math.inf  # there is no way to cover all the shifts
+
+    # The minimum cost possible if we hire current_lifeguard
+    hiring_cost = abs(current_lifeguard[1] - current_lifeguard[0]) + lifeguard_shift(reduced_shifts, reduced_lifeguards)
+
+    if hiring_cost == math.inf:
+        return math.inf  # don't bother checking what happens if we skip
+
+    # The portion of current_lifeguard's shift which overlaps with another lifeguard
+    overlapping_shift = current_shift.difference(shifts_required)
+    # The unique shift covered by current_lifeguard (i.e. the portion of current_lifeguard's shift which is not already
+    # covered by another lifeguard)
+    unique_shift = current_shift.difference(overlapping_shift)
+
+    if len(unique_shift) > 0:
+        if min(unique_shift) < lifeguards[1][0]:
+            # current_lifeguard covers a shift that nobody else can cover
+            # we therefore must hire them
+            return hiring_cost
+
+    # The minimum cost possible if we don't hire current_lifeguard
+    skipping_cost = lifeguard_shift(shifts_required, reduced_lifeguards)
+
+    return min(skipping_cost, hiring_cost)
 
 
 def largest_valid_tree(edge_string: str) -> int:
