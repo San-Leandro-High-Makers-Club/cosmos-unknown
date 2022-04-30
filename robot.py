@@ -107,9 +107,8 @@ ARM_GRAVITY_POWER = 0.2
 ARM_POSITIONS = {
     "dpad_up": 0,  # highest position
     "dpad_down": -1250,  # lowest position
-    "button_a": -700,  # command room
-    "button_b": -1165,  # satellite dish
-    "button_x": -775  # refinery
+    "button_a": -1165,  # satellite dish
+    "button_b": -775  # refinery
 }
 
 # height of ship 22.5 inch
