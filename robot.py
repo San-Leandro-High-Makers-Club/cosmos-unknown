@@ -111,7 +111,6 @@ ARM_POSITIONS = {
     "button_b": -760  # refinery
 }
 
-# height of ship 22.5 inch
 # Maximum acceptable deviation (as an encoder value) from the arm position when using a preset
 ARM_POSITION_TOLERANCE = 8
 
