@@ -73,7 +73,7 @@ ARM_SPEED = 0.5
 
 # True speed at which the arm should move when a preset is activated. This is a "true" speed; attempts will be made
 # to ensure that the arm does in fact travel at this speed (compensating for the effects of the gravitational torque).
-AUTOMATIC_ARM_SPEED = 0.45
+AUTOMATIC_ARM_SPEED = 0.35
 
 # Speed at which the pincer should open and close
 PINCER_SPEED = 0.4
