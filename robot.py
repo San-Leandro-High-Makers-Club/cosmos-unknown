@@ -106,7 +106,7 @@ ARM_GRAVITY_RANGE = (-1500, -700)
 
 # Range of arm positions (as encoder values) where the motor must be powered in the downwards direction to cancel the
 # gravitational torque. In these positions, the arm is folded back above the robot.
-REVERSE_ARM_GRAVITY_RANGE = (-500, 0)
+REVERSE_ARM_GRAVITY_RANGE = (-325, 0)
 
 # The velocity at which the arm motor must be powered when inside a gravity range to maintain its position
 ARM_GRAVITY_POWER = 0.2
