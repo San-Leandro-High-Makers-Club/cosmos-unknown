@@ -102,7 +102,7 @@ HEADING_TOLERANCE = 10
 
 # Range of arm positions (as encoder values) where the motor must be powered in the upwards direction to cancel the
 # gravitational torque. In these positions, the arm is extended outwards in front of the robot.
-ARM_GRAVITY_RANGE = (-1500, -700)
+ARM_GRAVITY_RANGE = (-1500, -790)
 
 # Range of arm positions (as encoder values) where the motor must be powered in the downwards direction to cancel the
 # gravitational torque. In these positions, the arm is folded back above the robot.
