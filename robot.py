@@ -149,10 +149,22 @@ def autonomous_setup():
     Robot.set_value(DRIVE_CONTROLLER_ID, "enc_" + L_DRIVE_MOTOR, 0)
     Robot.set_value(DRIVE_CONTROLLER_ID, "enc_" + R_DRIVE_MOTOR, 0)
 
-    # Begin moving straight from the starting zone
-    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, AUTONOMOUS_SPEED)
-    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, AUTONOMOUS_SPEED)
-
+    # Begin moving straight in reverse from the starting zone
+    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, -AUTONOMOUS_SPEED)
+    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, -AUTONOMOUS_SPEED)
+    
+    def average_distance_travelled():
+        return abs((Robot.get_value(DRIVE_CONTROLLER_ID, "enc_" + L_DRIVE_MOTOR) + Robot.get_value(DRIVE_CONTROLLER_ID,
+            "enc_" + R_DRIVE_MOTOR)) / 2)
+    
+    # Wait until we've moved 165 cm...
+    while average_distance_travelled() < 5610:
+        pass
+    
+    # ...then stop
+    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, 0)
+    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, 0)
+    
 
 def get_line_follower_values(line_follower: str) -> Dict[str, float]:
     """Return the sensor readings of a line follower as a dictionary
@@ -191,67 +203,68 @@ completed_autonomous = False
 
 
 def autonomous_main():
-    global autonomous_heading, completed_third_tape_segment, completed_autonomous
+    pass
+    # global autonomous_heading, completed_third_tape_segment, completed_autonomous
 
-    if completed_autonomous:  # we're done :)
-        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, 0)
-        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, 0)
-        return
+    # if completed_autonomous:  # we're done :)
+        # Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, 0)
+        # Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, 0)
+        # return
 
-    if get_line_follower_values("leading")["left"] > get_line_follower_values("leading")["center"] >= ON_LINE_THRESHOLD:
-        # We're drifting to the right
-        # Rotate left until the leading line follower is above the line again, keeping track of how far we turn
-        initial_encoder_position = Robot.get_value(DRIVE_CONTROLLER_ID, "enc_" + R_DRIVE_MOTOR)
-        while get_line_follower_values("leading")["left"] >= get_line_follower_values("leading")["center"]:
-            Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, -AUTONOMOUS_ROTATION_SPEED)
-            Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, AUTONOMOUS_ROTATION_SPEED)
-        theta = abs(Robot.get_value(DRIVE_CONTROLLER_ID, "enc_" + R_DRIVE_MOTOR) - initial_encoder_position) / (
-                QUARTER_TURN_ARC_LENGTH / 90)
-        # See if we've reached the end of the third tape segment
-        if not completed_third_tape_segment:
-            if abs(90 - abs(autonomous_heading)) < HEADING_TOLERANCE < abs(90 - abs(autonomous_heading + theta)):
-                completed_third_tape_segment = True
-        autonomous_heading += theta
-        return  # Continue autonomous driving
-    elif get_line_follower_values("leading")["right"] > get_line_follower_values("leading")["center"] >= \
-            ON_LINE_THRESHOLD:
-        # We're drifting to the left
-        # Rotate right until the leading line follower is above the line again, keeping track of how far we turn
-        initial_encoder_position = Robot.get_value(DRIVE_CONTROLLER_ID, "enc_" + L_DRIVE_MOTOR)
-        while get_line_follower_values("leading")["right"] >= get_line_follower_values("leading")["center"]:
-            Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, AUTONOMOUS_ROTATION_SPEED)
-            Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, -AUTONOMOUS_ROTATION_SPEED)
-        theta = abs(Robot.get_value(DRIVE_CONTROLLER_ID, "enc_" + L_DRIVE_MOTOR) - initial_encoder_position) / (
-                QUARTER_TURN_ARC_LENGTH / 90)
-        # See if we've reached the end of the third tape segment
-        if not completed_third_tape_segment:
-            if abs(90 - abs(autonomous_heading)) < HEADING_TOLERANCE < abs(90 - abs(autonomous_heading - theta)):
-                completed_third_tape_segment = True
-        autonomous_heading -= theta
-        return  # Continue autonomous driving
+    # if get_line_follower_values("leading")["left"] > get_line_follower_values("leading")["center"] >= ON_LINE_THRESHOLD:
+        # # We're drifting to the right
+        # # Rotate left until the leading line follower is above the line again, keeping track of how far we turn
+        # initial_encoder_position = Robot.get_value(DRIVE_CONTROLLER_ID, "enc_" + R_DRIVE_MOTOR)
+        # while get_line_follower_values("leading")["left"] >= get_line_follower_values("leading")["center"]:
+            # Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, -AUTONOMOUS_ROTATION_SPEED)
+            # Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, AUTONOMOUS_ROTATION_SPEED)
+        # theta = abs(Robot.get_value(DRIVE_CONTROLLER_ID, "enc_" + R_DRIVE_MOTOR) - initial_encoder_position) / (
+                # QUARTER_TURN_ARC_LENGTH / 90)
+        # # See if we've reached the end of the third tape segment
+        # if not completed_third_tape_segment:
+            # if abs(90 - abs(autonomous_heading)) < HEADING_TOLERANCE < abs(90 - abs(autonomous_heading + theta)):
+                # completed_third_tape_segment = True
+        # autonomous_heading += theta
+        # return  # Continue autonomous driving
+    # elif get_line_follower_values("leading")["right"] > get_line_follower_values("leading")["center"] >= \
+            # ON_LINE_THRESHOLD:
+        # # We're drifting to the left
+        # # Rotate right until the leading line follower is above the line again, keeping track of how far we turn
+        # initial_encoder_position = Robot.get_value(DRIVE_CONTROLLER_ID, "enc_" + L_DRIVE_MOTOR)
+        # while get_line_follower_values("leading")["right"] >= get_line_follower_values("leading")["center"]:
+            # Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, AUTONOMOUS_ROTATION_SPEED)
+            # Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, -AUTONOMOUS_ROTATION_SPEED)
+        # theta = abs(Robot.get_value(DRIVE_CONTROLLER_ID, "enc_" + L_DRIVE_MOTOR) - initial_encoder_position) / (
+                # QUARTER_TURN_ARC_LENGTH / 90)
+        # # See if we've reached the end of the third tape segment
+        # if not completed_third_tape_segment:
+            # if abs(90 - abs(autonomous_heading)) < HEADING_TOLERANCE < abs(90 - abs(autonomous_heading - theta)):
+                # completed_third_tape_segment = True
+        # autonomous_heading -= theta
+        # return  # Continue autonomous driving
 
-    if get_line_follower_values("leading")["center"] >= ON_LINE_THRESHOLD:
-        # Continue straight on the line
-        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, AUTONOMOUS_SPEED)
-        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, AUTONOMOUS_SPEED)
-    else:
-        # Proceed with caution
-        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, REDUCED_AUTONOMOUS_SPEED)
-        Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, REDUCED_AUTONOMOUS_SPEED)
+    # if get_line_follower_values("leading")["center"] >= ON_LINE_THRESHOLD:
+        # # Continue straight on the line
+        # Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, AUTONOMOUS_SPEED)
+        # Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, AUTONOMOUS_SPEED)
+    # else:
+        # # Proceed with caution
+        # Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, REDUCED_AUTONOMOUS_SPEED)
+        # Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, REDUCED_AUTONOMOUS_SPEED)
 
-    if get_line_follower_values("leading")["center"] <= OFF_LINE_THRESHOLD:
-        # See if we're almost done (on the line following tape inside the end zone)
-        if completed_third_tape_segment and abs(90 - abs(autonomous_heading)) < HEADING_TOLERANCE:
-            leading_sensors = get_line_follower_values("leading")
-            if leading_sensors["left"] <= OFF_LINE_THRESHOLD and leading_sensors["right"] <= OFF_LINE_THRESHOLD:
-                # This seems to be the end
-                while get_line_follower_values("center")["center"] >= ON_LINE_THRESHOLD:
-                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, REDUCED_AUTONOMOUS_SPEED)
-                    Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, REDUCED_AUTONOMOUS_SPEED)
-                Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, 0)
-                Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, 0)
-                completed_autonomous = True
-                return
+    # if get_line_follower_values("leading")["center"] <= OFF_LINE_THRESHOLD:
+        # # See if we're almost done (on the line following tape inside the end zone)
+        # if completed_third_tape_segment and abs(90 - abs(autonomous_heading)) < HEADING_TOLERANCE:
+            # leading_sensors = get_line_follower_values("leading")
+            # if leading_sensors["left"] <= OFF_LINE_THRESHOLD and leading_sensors["right"] <= OFF_LINE_THRESHOLD:
+                # # This seems to be the end
+                # while get_line_follower_values("center")["center"] >= ON_LINE_THRESHOLD:
+                    # Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, REDUCED_AUTONOMOUS_SPEED)
+                    # Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, REDUCED_AUTONOMOUS_SPEED)
+                # Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, 0)
+                # Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, 0)
+                # completed_autonomous = True
+                # return
 
 
 # Control the arm based on driver and sensor input
