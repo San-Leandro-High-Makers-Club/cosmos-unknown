@@ -320,10 +320,10 @@ def arm_control():
                     desired_arm_speed = -AUTOMATIC_ARM_SPEED
                     if ARM_GRAVITY_RANGE[0] < encoder_value < ARM_GRAVITY_RANGE[1]:
                         # gravity is already working in our favour
-                        desired_arm_speed -= ARM_GRAVITY_POWER
+                        desired_arm_speed += ARM_GRAVITY_POWER
                     if REVERSE_ARM_GRAVITY_RANGE[0] < encoder_value < REVERSE_ARM_GRAVITY_RANGE[1]:
                         # we're fighting gravity
-                        desired_arm_speed += ARM_GRAVITY_POWER
+                        desired_arm_speed -= ARM_GRAVITY_POWER
                     if desired_arm_speed < -1:
                         desired_arm_speed = -1
                     elif desired_arm_speed > 0:
