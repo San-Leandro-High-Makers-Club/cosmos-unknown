@@ -115,7 +115,7 @@ ARM_GRAVITY_POWER = 0.2
 # The key is the gamepad button used to activate the preset; the value is the preset encoder position
 ARM_POSITIONS = {
     "dpad_up": 0,  # highest position
-    "dpad_down": -1290,  # lowest position
+    "dpad_down": -1180,  # lowest position
     "button_a": -1165,  # satellite dish
     "button_b": -760,  # refinery
     "button_x": -700 #command roomd
