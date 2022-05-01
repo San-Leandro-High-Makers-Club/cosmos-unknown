@@ -96,10 +96,15 @@ QUARTER_TURN_ARC_LENGTH = 1065
 # The maximum error (in degrees) to anticipate in autonomous_heading
 HEADING_TOLERANCE = 10
 
-# Range of arm positions (as encoder values) where the motor must be powered to cancel the gravitational torque
+# Range of arm positions (as encoder values) where the motor must be powered in the upwards direction to cancel the
+# gravitational torque. In these positions, the arm is extended outwards in front of the robot.
 ARM_GRAVITY_RANGE = (-1500, -700)
 
-# The velocity at which the arm motor must be powered when inside the ARM_GRAVITY_RANGE to maintain its position
+# Range of arm positions (as encoder values) where the motor must be powered in the downwards direction to cancel the
+# gravitational torque. In these positions, the arm is folded back above the robot.
+REVERSE_ARM_GRAVITY_RANGE = (-500, 0)
+
+# The velocity at which the arm motor must be powered when inside a gravity range to maintain its position
 ARM_GRAVITY_POWER = 0.2
 
 # Preset arm encoder positions
@@ -261,7 +266,7 @@ def arm_control():
                     desired_preset = ""
                     break
 
-        if desired_preset == "":
+        if desired_preset == "":  # control the arm manually
             if move_arm_up and move_arm_down:
                 move_arm_up = False
                 move_arm_down = False
@@ -282,20 +287,22 @@ def arm_control():
                 encoder_value = Robot.get_value(ARM_CONTROLLER_ID, "enc_" + ARM_MOTOR)
                 if ARM_GRAVITY_RANGE[0] < encoder_value < ARM_GRAVITY_RANGE[1]:
                     Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, ARM_GRAVITY_POWER)
+                elif REVERSE_ARM_GRAVITY_RANGE[0] < encoder_value < REVERSE_ARM_GRAVITY_RANGE[1]:
+                    Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, -ARM_GRAVITY_POWER)
                 else:
                     Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
 
-        else:
+        else:  # control the arm automatically using preset encoder positions
             encoder_value = Robot.get_value(ARM_CONTROLLER_ID, "enc_" + ARM_MOTOR)
             while abs(encoder_value - ARM_POSITIONS[desired_preset]) > ARM_POSITION_TOLERANCE:
-                if encoder_value < ARM_POSITIONS[desired_preset]:
+                if encoder_value < ARM_POSITIONS[desired_preset]:  # going up
                     if Robot.get_value(LIMIT_SWITCH_ID, TOP_LIMIT_SWITCH) or Gamepad.get_value(ARM_DOWN_BUTTON):
                         break
                     if ARM_GRAVITY_RANGE[1] < encoder_value:
                         Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0.75 * ARM_SPEED)
                     else:
                         Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, ARM_SPEED)
-                elif encoder_value > ARM_POSITIONS[desired_preset]:
+                elif encoder_value > ARM_POSITIONS[desired_preset]:  # going down
                     if Robot.get_value(LIMIT_SWITCH_ID, BOTTOM_LIMIT_SWITCH) or Gamepad.get_value(ARM_UP_BUTTON):
                         break
                     if ARM_GRAVITY_RANGE[0] < encoder_value < ARM_GRAVITY_RANGE[1]:
