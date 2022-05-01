@@ -88,10 +88,10 @@ REDUCED_AUTONOMOUS_SPEED = 0.15
 AUTONOMOUS_ROTATION_SPEED = 0.4
 
 # The minimum line follower reading that is considered to be on the tape
-ON_LINE_THRESHOLD = 0.10
+ON_LINE_THRESHOLD = 0.075
 
 # The maximum line follower reading that is considered to be off the tape
-OFF_LINE_THRESHOLD = 0.07
+OFF_LINE_THRESHOLD = 0.06
 
 # The distance (as an encoder value) the drive motors much each turn (in opposite directions) to rotate the robot by 90
 # degrees
