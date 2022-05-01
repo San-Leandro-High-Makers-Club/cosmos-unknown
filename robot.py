@@ -303,8 +303,7 @@ def arm_control():
                     else:
                         Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, -0.75 * ARM_SPEED)
                 encoder_value = Robot.get_value(ARM_CONTROLLER_ID, "enc_" + ARM_MOTOR)
-
-            Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
+            continue
 
         open_pincer: bool = Gamepad.get_value(PINCER_OPEN_BUTTON)
         close_pincer: bool = Gamepad.get_value(PINCER_CLOSE_BUTTON)
