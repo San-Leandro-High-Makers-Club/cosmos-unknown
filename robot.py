@@ -118,7 +118,7 @@ ARM_POSITIONS = {
     "dpad_down": -1300,  # lowest position
     "button_a": -1165,  # satellite dish
     "button_b": -760,  # refinery
-    "button_x": -700
+    "button_x": -700 #command roomd
 }
 
 # Maximum acceptable deviation (as an encoder value) from the arm position when using a preset
