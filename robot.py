@@ -105,7 +105,7 @@ HEADING_TOLERANCE = 10
 ARM_GRAVITY_RANGE = (-1500, -790)
 
 # Range of arm positions (as encoder values) where the motor must be powered in the downwards direction to cancel the
-# gravitational torque. In these positions, the arm is folded back above the robot.
+# gravitational torque. In these positions, the arm is folded back above the robot.. 
 REVERSE_ARM_GRAVITY_RANGE = (-315, 20)
 
 # The velocity at which the arm motor must be powered when inside a gravity range to maintain its position
@@ -117,7 +117,8 @@ ARM_POSITIONS = {
     "dpad_up": 0,  # highest position
     "dpad_down": -1300,  # lowest position
     "button_a": -1165,  # satellite dish
-    "button_b": -760  # refinery
+    "button_b": -760,  # refinery
+    "button_x": -700
 }
 
 # Maximum acceptable deviation (as an encoder value) from the arm position when using a preset
