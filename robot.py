@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from typing import Dict
 
 #########################
@@ -369,3 +370,5 @@ def teleop_main():
     # Update velocity of each motor
     Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + L_DRIVE_MOTOR, target_left_drive_motor_velocity())
     Robot.set_value(DRIVE_CONTROLLER_ID, "velocity_" + R_DRIVE_MOTOR, target_right_drive_motor_velocity())
+=======
+>>>>>>> 9416786 (a)
