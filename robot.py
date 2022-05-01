@@ -34,14 +34,14 @@ BOTTOM_LIMIT_SWITCH = "switch1"
 # How to determine the desired drive motor velocity during teleop mode
 def target_left_drive_motor_velocity():
     velocity: float = -Gamepad.get_value("joystick_left_y")
-    if abs(velocity) < 0.1:
+    if abs(velocity) < 0.15:
         velocity = 0
     return velocity
 
 
 def target_right_drive_motor_velocity():
     velocity: float = -Gamepad.get_value("joystick_right_y")
-    if abs(velocity) < 0.1:
+    if abs(velocity) < 0.15:
         velocity = 0
     return velocity
 
