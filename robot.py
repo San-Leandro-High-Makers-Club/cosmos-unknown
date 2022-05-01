@@ -71,6 +71,10 @@ INVERT_ARM_MOTOR = False
 # Speed at which the arms should raise and lower
 ARM_SPEED = 0.5
 
+# True speed at which the arm should move when a preset is activated. This is a "true" speed; attempts will be made
+# to ensure that the arm does in fact travel at this speed (compensating for the effects of the gravitational torque).
+AUTOMATIC_ARM_SPEED = 0.2
+
 # Speed at which the pincer should open and close
 PINCER_SPEED = 0.4
 
@@ -298,17 +302,33 @@ def arm_control():
                 if encoder_value < ARM_POSITIONS[desired_preset]:  # going up
                     if Robot.get_value(LIMIT_SWITCH_ID, TOP_LIMIT_SWITCH) or Gamepad.get_value(ARM_DOWN_BUTTON):
                         break
-                    if ARM_GRAVITY_RANGE[1] < encoder_value:
-                        Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0.75 * ARM_SPEED)
-                    else:
-                        Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, ARM_SPEED)
+                    desired_arm_speed = AUTOMATIC_ARM_SPEED
+                    if ARM_GRAVITY_RANGE[0] < encoder_value < ARM_GRAVITY_RANGE[1]:
+                        # we're fighting gravity
+                        desired_arm_speed += ARM_GRAVITY_POWER
+                    if REVERSE_ARM_GRAVITY_RANGE[0] < encoder_value < REVERSE_ARM_GRAVITY_RANGE[1]:
+                        # gravity is already working in our favour
+                        desired_arm_speed -= ARM_GRAVITY_POWER
+                    if desired_arm_speed > 1:
+                        desired_arm_speed = 1
+                    elif desired_arm_speed < 0:
+                        desired_arm_speed = 0
+                    Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, desired_arm_speed)
                 elif encoder_value > ARM_POSITIONS[desired_preset]:  # going down
                     if Robot.get_value(LIMIT_SWITCH_ID, BOTTOM_LIMIT_SWITCH) or Gamepad.get_value(ARM_UP_BUTTON):
                         break
+                    desired_arm_speed = -AUTOMATIC_ARM_SPEED
                     if ARM_GRAVITY_RANGE[0] < encoder_value < ARM_GRAVITY_RANGE[1]:
-                        Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, 0)
-                    else:
-                        Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, -0.75 * ARM_SPEED)
+                        # gravity is already working in our favour
+                        desired_arm_speed -= ARM_GRAVITY_POWER
+                    if REVERSE_ARM_GRAVITY_RANGE[0] < encoder_value < REVERSE_ARM_GRAVITY_RANGE[1]:
+                        # we're fighting gravity
+                        desired_arm_speed += ARM_GRAVITY_POWER
+                    if desired_arm_speed < -1:
+                        desired_arm_speed = -1
+                    elif desired_arm_speed > 0:
+                        desired_arm_speed = 0
+                    Robot.set_value(ARM_CONTROLLER_ID, "velocity_" + ARM_MOTOR, desired_arm_speed)
                 encoder_value = Robot.get_value(ARM_CONTROLLER_ID, "enc_" + ARM_MOTOR)
             continue
 
